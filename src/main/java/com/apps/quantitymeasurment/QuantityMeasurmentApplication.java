@@ -3,11 +3,13 @@ package com.apps.quantitymeasurment;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+
 @SpringBootApplication
 public class QuantityMeasurmentApplication {
 
     // Inner class representing Feet measurement
-    static class Feet {
+    public static class Feet {
         private final double value;
 
         public Feet(double value) {
@@ -39,15 +41,50 @@ public class QuantityMeasurmentApplication {
         }
     }
 
-	public static void main(String[] args) {
+    public static class Inches {
 
-        Feet firstValue = new Feet(1.0);
-        Feet secondValue = new Feet(1.0);
+        private final double value;
 
-        boolean result = firstValue.equals(secondValue);
+        public Inches(double value) {
+            this.value = value;
+        }
 
-        System.out.println("Input: " + firstValue + " and " + secondValue);
-        System.out.println("Output: Equal (" + result + ")");
-	}
+        @Override
+        public boolean equals(Object object) {
+            if (this == object)
+                return true;
 
+            if (object == null || getClass() != object.getClass())
+                return false;
+
+            Inches inches = (Inches) object;
+
+            return Double.compare(this.value, inches.value) == 0;
+
+        }
+
+        public String toString() {
+            return value + " ft ";
+        }
+
+    }
+
+    public static void main(String[] args) {
+        demonstrateFeetEquality();
+        demonstrateInchEquality();
+    }
+
+    private static void demonstrateInchEquality() {
+        Inches inch1 = new Inches(1.0);
+        Inches inch2 = new Inches(1.0);
+        System.out.println("Inchesh equality " + inch1.equals(inch2));
+    }
+
+    private static void demonstrateFeetEquality() {
+        Feet feet1 = new Feet(1.0);
+        Feet feet2 = new Feet(1.0);
+
+        System.out.println("Feet equality " + feet1.equals(feet2));
+
+    }
 }
