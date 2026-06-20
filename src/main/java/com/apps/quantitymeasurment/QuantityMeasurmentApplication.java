@@ -1,9 +1,8 @@
 package com.apps.quantitymeasurment;
 
+import com.apps.quantitymeasurment.enums.LengthUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 @SpringBootApplication
 public class QuantityMeasurmentApplication {
@@ -51,11 +50,9 @@ public class QuantityMeasurmentApplication {
 
         @Override
         public boolean equals(Object object) {
-            if (this == object)
-                return true;
+            if (this == object) return true;
 
-            if (object == null || getClass() != object.getClass())
-                return false;
+            if (object == null || getClass() != object.getClass()) return false;
 
             Inches inches = (Inches) object;
 
@@ -83,8 +80,25 @@ public class QuantityMeasurmentApplication {
     private static void demonstrateFeetEquality() {
         Feet feet1 = new Feet(1.0);
         Feet feet2 = new Feet(1.0);
+        demonstrateFeetInchesComparison();
 
         System.out.println("Feet equality " + feet1.equals(feet2));
 
+
+    }
+
+    public static void demonstrateFeetInchesComparison() {
+
+        Length feetLength = new Length(1.0, LengthUnit.FEET);
+
+        Length inchesLength = new Length(12.0, LengthUnit.INCHES);
+
+        boolean result = demonstrateLengthEquality(feetLength, inchesLength);
+
+        System.out.println("1 Foot equals 12 Inches : " + result);
+    }
+
+    private static boolean demonstrateLengthEquality(Length feetLength, Length inchesLength) {
+        return feetLength.equals(inchesLength);
     }
 }
