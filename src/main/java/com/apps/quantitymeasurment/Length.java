@@ -13,6 +13,22 @@ public class Length {
         this.unit = unit;
     }
 
+    public static double convert(double v, LengthUnit sourceUnit, LengthUnit targetUnit) {
+        if(!Double.isFinite(v))
+        {
+            throw new IllegalArgumentException("Value must be finite");
+        }
+
+        if(sourceUnit == null || targetUnit == null)
+        {
+            throw new IllegalArgumentException("values cannot be null");
+        }
+
+        double baseValue = v*sourceUnit.getConversionFactor();
+
+        return baseValue/ targetUnit.getConversionFactor();
+    }
+
     //Convert length to base unit
     public double convertToBaseUnit()
     {
@@ -55,4 +71,5 @@ public class Length {
 
 
     }
+
 }

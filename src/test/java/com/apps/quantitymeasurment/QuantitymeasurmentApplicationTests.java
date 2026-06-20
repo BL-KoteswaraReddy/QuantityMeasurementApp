@@ -162,4 +162,64 @@ class QuantitymeasurmentApplicationTests {
         assertFalse(yard.equals(feet));
     }
 
+    @Test
+    public void testConversion_FeetToInches()
+    {
+        assertEquals(12.0, Length.convert(1.0, LengthUnit.FEET, LengthUnit.INCHES), 0.000001);
+    }
+
+    @Test
+    public void testConversion_InchesToFeet()
+    {
+        assertEquals(2.0, Length.convert(24.0, LengthUnit.INCHES, LengthUnit.FEET), 0.000001);
+    }
+
+    @Test
+    public void testConversion_YardstoInches()
+    {
+        assertEquals(36.0,
+                Length.convert(1.0, LengthUnit.YARDS, LengthUnit.INCHES),
+                0.000001);
+    }
+
+    @Test
+    public void testConversion_InchesToYards()
+    {
+        assertEquals(2.0, Length.convert(72.0,LengthUnit.INCHES, LengthUnit.YARDS));
+    }
+
+    @Test
+    public void testConversion_CentimetersToInches()
+    {
+        assertEquals(1.0, Length.convert(2.54, LengthUnit.CENTIMETERS, LengthUnit.INCHES), 0.001);
+    }
+
+    @Test
+    public void testConversion_FeetToYards() {
+        assertEquals(2.0,
+                Length.convert(6.0, LengthUnit.FEET, LengthUnit.YARDS),
+                0.000001);
+    }
+
+    @Test
+    public void testConversion_ZeroValue() {
+        assertEquals(0.0,
+                Length.convert(0.0, LengthUnit.FEET, LengthUnit.INCHES),
+                0.000001);
+    }
+
+    @Test
+    public void testConversion_NegativeValue() {
+        assertEquals(-12.0,
+                Length.convert(-1.0, LengthUnit.FEET, LengthUnit.INCHES),
+                0.000001);
+    }
+
+    @Test
+    public void testConversion_SameUnit() {
+        assertEquals(5.0,
+                Length.convert(5.0, LengthUnit.FEET, LengthUnit.FEET),
+                0.000001);
+    }
+
 }

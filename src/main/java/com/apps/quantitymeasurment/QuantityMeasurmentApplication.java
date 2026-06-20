@@ -84,6 +84,12 @@ public class QuantityMeasurmentApplication {
         demonstrateLengthComparision(30.48, LengthUnit.CENTIMETERS, 1.0, LengthUnit.FEET);
 
 
+        System.out.println("Feet to inches "+Length.convert(1.0, LengthUnit.FEET, LengthUnit.INCHES));
+        System.out.println("Yards to Feet "+Length.convert(3.0, LengthUnit.YARDS, LengthUnit.FEET));
+        System.out.println("Centimeters to Inches "+Length.convert(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCHES));
+        System.out.println("Feet to inches "+Length.convert(0.0, LengthUnit.FEET, LengthUnit.INCHES));
+
+
     }
 
     private static boolean demonstrateLengthComparision(double value1, LengthUnit lengthUnitOne, double value2, LengthUnit lengthUnitTwo)
@@ -100,6 +106,5 @@ public class QuantityMeasurmentApplication {
     private static boolean demonstrateLengthEquality(Length length1, Length length2) {
         return length2.equals(length2);
     }
-
 
 }
