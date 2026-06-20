@@ -6,7 +6,6 @@ public class Length {
     private double value;
     private LengthUnit unit;
 
-
     //constructor to initialize length value and unit
     public Length(double value, LengthUnit unit)
     {
@@ -29,6 +28,7 @@ public class Length {
     @Override
     public boolean equals(Object object)
     {
+       // System.out.println("checking");
         if(this == object)
             return true;
 
