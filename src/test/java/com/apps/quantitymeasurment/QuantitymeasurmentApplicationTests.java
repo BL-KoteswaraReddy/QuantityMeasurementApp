@@ -1,9 +1,10 @@
 package com.apps.quantitymeasurment;
 
+import com.apps.quantitymeasurment.enums.LengthUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.lang.annotation.Inherited;
+
 
 import static com.apps.quantitymeasurment.QuantityMeasurmentApplication.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,5 +97,14 @@ class QuantitymeasurmentApplicationTests {
         Inches inche1 = new Inches(1.0);
         assertTrue(inche1.equals(inche1));
     }
+
+    @Test
+    public void testFeetIncheComparision()
+    {
+        Length feet = new Length(1.0, LengthUnit.FEET);
+        Length inche = new Length(12.0, LengthUnit.INCHES);
+        assertTrue(feet.equals(inche));
+    }
+
 
 }
