@@ -218,6 +218,9 @@ class QuantitymeasurmentApplicationTests {
         Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(2.54, LengthUnit.CENTIMETERS, 1.0, LengthUnit.INCHES);
         Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
 
+        System.out.println(actual);
+        System.out.println(expected);
+        System.out.println(actual.getValue() - expected.getValue());
         assertTrue(
                 Math.abs(actual.getValue() - expected.getValue()) < 0.01
         );

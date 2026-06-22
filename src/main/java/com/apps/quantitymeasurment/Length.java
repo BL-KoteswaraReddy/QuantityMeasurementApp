@@ -65,12 +65,12 @@ public class Length {
     public Length add(Length other)
     {
         if(other == null)
-            new IllegalArgumentException("Length cannot be null");
+            throw new IllegalArgumentException("Length cannot be null");
 
         double thisInBase = this.unit.convertToBaseUnit(this.value);
         double otherInBase = other.unit.convertToBaseUnit(other.value);
         double totalBase = thisInBase+otherInBase;
-        double resultValue = totalBase/this.unit.convertFromBaseUnit(this.value);
+        double resultValue = this.unit.convertFromBaseUnit(totalBase);
         return new Length(resultValue, this.getUnit());
 
     }
