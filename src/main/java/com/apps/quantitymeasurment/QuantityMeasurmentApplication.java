@@ -4,8 +4,15 @@ import com.apps.quantitymeasurment.enums.LengthUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
 public class QuantityMeasurmentApplication {
+
+    public static Length demonstrateLengthAddition(double v, LengthUnit lengthUnit, double v1, LengthUnit lengthUnit1) {
+            Length result = new Length(v, lengthUnit).add(new Length(v1,lengthUnit1));
+            return result;
+    }
+
 
     // Inner class representing Feet measurement
     public static class Feet {
@@ -97,7 +104,7 @@ public class QuantityMeasurmentApplication {
             return result;
     }
 
-    private static boolean demonstrateLengthEquality(Length length1, Length length2) {
+    static boolean demonstrateLengthEquality(Length length1, Length length2) {
         return length2.equals(length2);
     }
 
