@@ -1,6 +1,7 @@
 package com.apps.quantitymeasurment;
 
 import com.apps.quantitymeasurment.enums.LengthUnit;
+import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.lang.annotation.Inherited;
@@ -329,6 +330,135 @@ class QuantitymeasurmentApplicationTests {
         assertEquals(0.393701,
                 LengthUnit.CENTIMETERS.getConversionFactor(),
                 0.0001);
+    }
+
+
+    @Test
+    public void testWeightEquality_KilogramToKilogram() {
+
+        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(1.0, WeightUnit.KILOGRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_KilogramToGram() {
+
+        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(1000.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_PoundToPound() {
+
+        Weight weight1 = new Weight(2.0, WeightUnit.POUND);
+        Weight weight2 = new Weight(2.0, WeightUnit.POUND);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_KilogramToPound() {
+
+        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(2.20462, WeightUnit.POUND);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_GramToKilogram() {
+
+        Weight weight1 = new Weight(500.0, WeightUnit.GRAM);
+        Weight weight2 = new Weight(0.5, WeightUnit.KILOGRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_PoundToGram() {
+
+        Weight weight1 = new Weight(1.0, WeightUnit.POUND);
+        Weight weight2 = new Weight(453.592, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_NullComparison() {
+        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
+        assertFalse(weight.equals(null));
+    }
+
+    @Test
+    public void testWeightEquality_SameReference() {
+        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
+        assertTrue(weight.equals(weight));
+    }
+
+    @Test
+    public void testWeightEquality_DifferentType() {
+
+        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
+
+        assertFalse(weight.equals("1.0"));
+    }
+
+    @Test
+    public void testWeightEquality_ZeroValue() {
+
+        Weight weight1 = new Weight(0.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(0.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_NegativeValues() {
+
+        Weight weight1 = new Weight(-1.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(-1000.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_LargeValues() {
+
+        Weight weight1 = new Weight(1000.0, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(1000000.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_SmallValues() {
+
+        Weight weight1 = new Weight(0.001, WeightUnit.KILOGRAM);
+        Weight weight2 = new Weight(1.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_MilligramToGram() {
+
+        Weight weight1 = new Weight(1000.0, WeightUnit.MILLIGRAM);
+        Weight weight2 = new Weight(1.0, WeightUnit.GRAM);
+
+        assertTrue(weight1.equals(weight2));
+    }
+
+    @Test
+    public void testWeightEquality_TonneToKilogram() {
+
+        Weight weight1 = new Weight(1.0, WeightUnit.TONNE);
+        Weight weight2 = new Weight(1000.0, WeightUnit.KILOGRAM);
+
+        assertTrue(weight1.equals(weight2));
     }
 
 }
