@@ -127,4 +127,23 @@ public class Length {
                 new Length(5.0, LengthUnit.FEET)
                         .add(new Length(-2.0, LengthUnit.FEET)));
     }
+
+    public Length add(Length other, LengthUnit targetUnit)
+    {
+        if(other == null)
+          new IllegalArgumentException("Length cannot be null");
+
+        if(targetUnit == null)
+            new IllegalArgumentException("Target cannot be null");
+
+        double thisInBase = this.value*this.unit.getConversionFactor();
+
+        double otherInBase = other.value*other.unit.getConversionFactor();
+
+        double totalInBase = thisInBase+otherInBase;
+
+        double resultValue = totalInBase/targetUnit.getConversionFactor();
+
+        return  new Length(resultValue, targetUnit);
+    }
 }
