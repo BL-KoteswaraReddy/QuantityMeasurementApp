@@ -14,6 +14,13 @@ public class QuantityMeasurmentApplication {
             return result;
     }
 
+    public static Length demonstrateLengthAddition(double value1, LengthUnit unit1, double value2, LengthUnit unit2, LengthUnit targetUnit)
+    {
+        if(targetUnit == null)
+            throw  new IllegalArgumentException("Target unit cannot be null");
+        return new Length(value1, unit1).add(new Length(value2, unit2), targetUnit);
+    }
+
 
     // Inner class representing Feet measurement
     public static class Feet {
@@ -91,6 +98,69 @@ public class QuantityMeasurmentApplication {
         //Demonstrate Centimeteres and Feet comparision
         demonstrateLengthComparision(30.48, LengthUnit.CENTIMETERS, 1.0, LengthUnit.FEET);
 
+        System.out.println(
+                demonstrateLengthAddition(
+                        1.0,
+                        LengthUnit.FEET,
+                        12.0,
+                        LengthUnit.INCHES,
+                        LengthUnit.FEET));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        1.0,
+                        LengthUnit.FEET,
+                        12.0,
+                        LengthUnit.INCHES,
+                        LengthUnit.INCHES));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        1.0,
+                        LengthUnit.FEET,
+                        12.0,
+                        LengthUnit.INCHES,
+                        LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        1.0,
+                        LengthUnit.YARDS,
+                        3.0,
+                        LengthUnit.FEET,
+                        LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        36.0,
+                        LengthUnit.INCHES,
+                        1.0,
+                        LengthUnit.YARDS,
+                        LengthUnit.FEET));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        2.54,
+                        LengthUnit.CENTIMETERS,
+                        1.0,
+                        LengthUnit.INCHES,
+                        LengthUnit.CENTIMETERS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        5.0,
+                        LengthUnit.FEET,
+                        0.0,
+                        LengthUnit.INCHES,
+                        LengthUnit.YARDS));
+
+        System.out.println(
+                demonstrateLengthAddition(
+                        5.0,
+                        LengthUnit.FEET,
+                        -2.0,
+                        LengthUnit.FEET,
+                        LengthUnit.INCHES));
 
 
         //weight related code
