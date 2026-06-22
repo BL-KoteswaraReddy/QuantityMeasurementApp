@@ -1,6 +1,7 @@
 package com.apps.quantitymeasurment;
 
 import com.apps.quantitymeasurment.enums.LengthUnit;
+import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -161,6 +162,79 @@ public class QuantityMeasurmentApplication {
                         LengthUnit.FEET,
                         LengthUnit.INCHES));
 
+
+        //weight related code
+        //Equality checks
+        System.out.println(demonstrateWeightEquality(1.0, WeightUnit.KILOGRAM,
+                1000.0, WeightUnit.GRAM));
+
+        System.out.println(
+                demonstrateWeightEquality(
+                        1.0, WeightUnit.POUND,
+                        453.592, WeightUnit.GRAM));
+
+        System.out.println(
+                demonstrateWeightEquality(
+                        500.0, WeightUnit.GRAM,
+                        0.5, WeightUnit.KILOGRAM));
+
+        // Conversions
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.KILOGRAM)
+                        .convertTo(WeightUnit.GRAM));
+
+        System.out.println(
+                new Weight(1000.0, WeightUnit.GRAM)
+                        .convertTo(WeightUnit.KILOGRAM));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.POUND)
+                        .convertTo(WeightUnit.GRAM));
+
+        System.out.println(
+                new Weight(1000.0, WeightUnit.MILLIGRAM)
+                        .convertTo(WeightUnit.GRAM));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.TONNE)
+                        .convertTo(WeightUnit.KILOGRAM));
+
+
+        // Addition
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.KILOGRAM)
+                        .add(new Weight(500.0, WeightUnit.GRAM)));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.POUND)
+                        .add(new Weight(453.592, WeightUnit.GRAM)));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.TONNE)
+                        .add(new Weight(500.0, WeightUnit.KILOGRAM)));
+
+        // Addition with Explicit Target Unit
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.KILOGRAM)
+                        .add(
+                                new Weight(500.0, WeightUnit.GRAM),
+                                WeightUnit.GRAM));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.POUND)
+                        .add(
+                                new Weight(453.592, WeightUnit.GRAM),
+                                WeightUnit.KILOGRAM));
+
+        System.out.println(
+                new Weight(1.0, WeightUnit.TONNE)
+                        .add(
+                                new Weight(500.0, WeightUnit.KILOGRAM),
+                                WeightUnit.TONNE));
+
     }
 
     private static boolean demonstrateLengthComparision(double value1, LengthUnit lengthUnitOne, double value2, LengthUnit lengthUnitTwo)
@@ -176,6 +250,39 @@ public class QuantityMeasurmentApplication {
 
     static boolean demonstrateLengthEquality(Length length1, Length length2) {
         return length1.equals(length2);
+    }
+
+    public static boolean demonstrateWeightEquality(
+            double value1,
+            WeightUnit unit1,
+            double value2,
+            WeightUnit unit2) {
+
+        Weight weight1 = new Weight(value1, unit1);
+        Weight weight2 = new Weight(value2, unit2);
+
+        return weight1.equals(weight2);
+    }
+
+    public static Weight demonstrateWeightAddition(
+            double value1,
+            WeightUnit unit1,
+            double value2,
+            WeightUnit unit2) {
+
+        return new Weight(value1, unit1)
+                .add(new Weight(value2, unit2));
+    }
+
+    public static Weight demonstrateWeightAddition(
+            double value1,
+            WeightUnit unit1,
+            double value2,
+            WeightUnit unit2,
+            WeightUnit targetUnit) {
+
+        return new Weight(value1, unit1)
+                .add(new Weight(value2, unit2), targetUnit);
     }
 
 
