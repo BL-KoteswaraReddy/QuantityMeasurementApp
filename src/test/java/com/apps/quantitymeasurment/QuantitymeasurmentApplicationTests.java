@@ -300,6 +300,33 @@ class QuantitymeasurmentApplicationTests {
         assertEquals(0.003, actual.getValue(), 0.0001);
     }
 
+    @Test
+    public void testLengthUnitEnum_FeetConstant() {
+        assertEquals(12.0,
+                LengthUnit.FEET.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_InchesConstant() {
+        assertEquals(1.0,
+                LengthUnit.INCHES.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_YardsConstant() {
+        assertEquals(36.0,
+                LengthUnit.YARDS.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_CentimetersConstant() {
+        assertEquals(0.393701,
+                LengthUnit.CENTIMETERS.getConversionFactor(),
+                0.0001);
+    }
 
 }
 
