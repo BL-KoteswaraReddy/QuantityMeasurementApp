@@ -218,6 +218,9 @@ class QuantitymeasurmentApplicationTests {
         Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(2.54, LengthUnit.CENTIMETERS, 1.0, LengthUnit.INCHES);
         Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
 
+        System.out.println(actual);
+        System.out.println(expected);
+        System.out.println(actual.getValue() - expected.getValue());
         assertTrue(
                 Math.abs(actual.getValue() - expected.getValue()) < 0.01
         );
@@ -300,6 +303,33 @@ class QuantitymeasurmentApplicationTests {
         assertEquals(0.003, actual.getValue(), 0.0001);
     }
 
+    @Test
+    public void testLengthUnitEnum_FeetConstant() {
+        assertEquals(12.0,
+                LengthUnit.FEET.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_InchesConstant() {
+        assertEquals(1.0,
+                LengthUnit.INCHES.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_YardsConstant() {
+        assertEquals(36.0,
+                LengthUnit.YARDS.getConversionFactor(),
+                0.0001);
+    }
+
+    @Test
+    public void testLengthUnitEnum_CentimetersConstant() {
+        assertEquals(0.393701,
+                LengthUnit.CENTIMETERS.getConversionFactor(),
+                0.0001);
+    }
 
     @Test
     public void testAddition_ExplicitTargetUnit_Feet() {

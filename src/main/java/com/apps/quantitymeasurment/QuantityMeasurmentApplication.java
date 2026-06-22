@@ -175,7 +175,7 @@ public class QuantityMeasurmentApplication {
     }
 
     static boolean demonstrateLengthEquality(Length length1, Length length2) {
-        return length2.equals(length2);
+        return length1.equals(length2);
     }
 
 

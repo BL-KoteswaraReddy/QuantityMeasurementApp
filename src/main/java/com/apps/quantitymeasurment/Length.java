@@ -32,7 +32,7 @@ public class Length {
     //Convert length to base unit
     public double convertToBaseUnit()
     {
-       return value*unit.getConversionFactor();
+       return unit.convertToBaseUnit(value);
     }
 
     //compare two length objects for equality based on their values in the base unit
@@ -55,9 +55,9 @@ public class Length {
 
         Length other = (Length) object;
 
-        double thisInFeet = this.value*this.unit.getConversionFactor();
+        double thisInFeet = this.unit.convertToBaseUnit(this.value);
 
-        double otherInFeet = other.value*other.unit.getConversionFactor();
+        double otherInFeet = other.unit.convertToBaseUnit(other.value);
 
         return Double.compare(thisInFeet, otherInFeet) == 0;
     }
@@ -65,12 +65,12 @@ public class Length {
     public Length add(Length other)
     {
         if(other == null)
-            new IllegalArgumentException("Length cannot be null");
+            throw new IllegalArgumentException("Length cannot be null");
 
-        double thisInBase = this.getValue()*this.getUnit().getConversionFactor();
-        double otherInBase = other.getValue()*other.getUnit().getConversionFactor();
+        double thisInBase = this.unit.convertToBaseUnit(this.value);
+        double otherInBase = other.unit.convertToBaseUnit(other.value);
         double totalBase = thisInBase+otherInBase;
-        double resultValue = totalBase/this.getUnit().getConversionFactor();
+        double resultValue = this.unit.convertFromBaseUnit(totalBase);
         return new Length(resultValue, this.getUnit());
 
     }
@@ -127,18 +127,17 @@ public class Length {
                 new Length(5.0, LengthUnit.FEET)
                         .add(new Length(-2.0, LengthUnit.FEET)));
     }
-
     public Length add(Length other, LengthUnit targetUnit)
     {
         if(other == null)
-          new IllegalArgumentException("Length cannot be null");
+            new IllegalArgumentException("Length cannot be null");
 
         if(targetUnit == null)
             new IllegalArgumentException("Target cannot be null");
 
-        double thisInBase = this.value*this.unit.getConversionFactor();
+        double thisInBase = this.unit.convertToBaseUnit(this.value);
 
-        double otherInBase = other.value*other.unit.getConversionFactor();
+        double otherInBase = other.unit.convertToBaseUnit(other.value);
 
         double totalInBase = thisInBase+otherInBase;
 
@@ -146,4 +145,5 @@ public class Length {
 
         return  new Length(resultValue, targetUnit);
     }
+
 }
