@@ -331,5 +331,200 @@ class QuantitymeasurmentApplicationTests {
                 0.0001);
     }
 
+    @Test
+    public void testAddition_ExplicitTargetUnit_Feet() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.FEET);
+
+        assertEquals(2.0, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.FEET, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Inches() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.INCHES);
+
+        assertEquals(24.0, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.INCHES, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Yards() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.YARDS);
+
+        assertEquals(0.6667, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.YARDS, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Centimeters() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.INCHES,
+                        1.0, LengthUnit.INCHES,
+                        LengthUnit.CENTIMETERS);
+
+        assertEquals(5.08, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.CENTIMETERS, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_SameAsFirstOperand() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        2.0, LengthUnit.YARDS,
+                        3.0, LengthUnit.FEET,
+                        LengthUnit.YARDS);
+
+        assertEquals(3.0, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.YARDS, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_SameAsSecondOperand() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        2.0, LengthUnit.YARDS,
+                        3.0, LengthUnit.FEET,
+                        LengthUnit.FEET);
+
+        assertEquals(9.0, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.FEET, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Commutativity() {
+
+        Length result1 =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.YARDS);
+
+        Length result2 =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        12.0, LengthUnit.INCHES,
+                        1.0, LengthUnit.FEET,
+                        LengthUnit.YARDS);
+
+        assertEquals(result1.getValue(), result2.getValue(), 0.0001);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_WithZero() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        5.0, LengthUnit.FEET,
+                        0.0, LengthUnit.INCHES,
+                        LengthUnit.YARDS);
+
+        assertEquals(1.6667, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.YARDS, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_NegativeValues() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        5.0, LengthUnit.FEET,
+                        -2.0, LengthUnit.FEET,
+                        LengthUnit.INCHES);
+
+        assertEquals(36.0, actual.getValue(), 0.01);
+        assertEquals(LengthUnit.INCHES, actual.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_NullTargetUnit() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        null)
+        );
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_LargeToSmallScale() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1000.0, LengthUnit.FEET,
+                        500.0, LengthUnit.FEET,
+                        LengthUnit.INCHES);
+
+        assertEquals(18000.0, actual.getValue(), 0.01);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_SmallToLargeScale() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        12.0, LengthUnit.INCHES,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.YARDS);
+
+        assertEquals(0.6667, actual.getValue(), 0.01);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_AllUnitCombinations() {
+
+        Length result1 =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.FEET,
+                        12.0, LengthUnit.INCHES,
+                        LengthUnit.FEET);
+
+        Length result2 =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        1.0, LengthUnit.YARDS,
+                        36.0, LengthUnit.INCHES,
+                        LengthUnit.YARDS);
+
+        Length result3 =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        2.54, LengthUnit.CENTIMETERS,
+                        1.0, LengthUnit.INCHES,
+                        LengthUnit.CENTIMETERS);
+
+        assertNotNull(result1);
+        assertNotNull(result2);
+        assertNotNull(result3);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_PrecisionTolerance() {
+
+        Length actual =
+                QuantityMeasurmentApplication.demonstrateLengthAddition(
+                        2.54, LengthUnit.CENTIMETERS,
+                        1.0, LengthUnit.INCHES,
+                        LengthUnit.CENTIMETERS);
+
+        assertEquals(5.08, actual.getValue(), 0.01);
+    }
 }
 
