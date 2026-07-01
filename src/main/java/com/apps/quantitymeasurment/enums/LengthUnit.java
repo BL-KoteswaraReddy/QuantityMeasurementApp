@@ -1,8 +1,10 @@
 package com.apps.quantitymeasurment.enums;
 import static com.apps.quantitymeasurment.QuantityMeasurmentApplication.*;
+
+import com.apps.quantitymeasurment.IMeasurable;
 import com.apps.quantitymeasurment.QuantityMeasurmentApplication;
 
-public enum LengthUnit {
+public enum LengthUnit implements IMeasurable {
 
     FEET(12.0),
         INCHES(1.0),
@@ -28,6 +30,11 @@ public enum LengthUnit {
     public double convertFromBaseUnit(double baseValue)
     {
         return baseValue/conversionFactor;
+    }
+
+    @Override
+    public String getUnitName() {
+        return name();
     }
 
 

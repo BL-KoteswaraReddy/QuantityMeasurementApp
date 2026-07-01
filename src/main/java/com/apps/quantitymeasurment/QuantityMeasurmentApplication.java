@@ -5,285 +5,79 @@ import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
 public class QuantityMeasurmentApplication {
 
-    public static Length demonstrateLengthAddition(double v, LengthUnit lengthUnit, double v1, LengthUnit lengthUnit1) {
-            Length result = new Length(v, lengthUnit).add(new Length(v1,lengthUnit1));
-            return result;
+    // One generic method replaces demonstrateLengthEquality + demonstrateWeightEquality
+    public static <U extends IMeasurable> boolean demonstrateEquality(
+            Quantity<U> q1, Quantity<U> q2) {
+        boolean result = q1.equals(q2);
+        System.out.println(q1 + " and " + q2 + " equal? " + result);
+        return result;
     }
 
-    public static Length demonstrateLengthAddition(double value1, LengthUnit unit1, double value2, LengthUnit unit2, LengthUnit targetUnit)
-    {
-        if(targetUnit == null)
-            throw  new IllegalArgumentException("Target unit cannot be null");
-        return new Length(value1, unit1).add(new Length(value2, unit2), targetUnit);
+    // One generic method replaces demonstrateLengthConversion + demonstrateWeightConversion
+    public static <U extends IMeasurable> Quantity<U> demonstrateConversion(
+            Quantity<U> quantity, U targetUnit) {
+        Quantity<U> result = quantity.convertTo(targetUnit);
+        System.out.println(quantity + " converted to " + targetUnit.getUnitName() + " = " + result);
+        return result;
     }
 
-
-    // Inner class representing Feet measurement
-    public static class Feet {
-        private final double value;
-
-        public Feet(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            // Same reference check
-            if (this == obj) {
-                return true;
-            }
-
-            // Null check and type check
-            if (obj == null || getClass() != obj.getClass()) {
-                return false;
-            }
-
-            // Safe casting
-            Feet other = (Feet) obj;
-
-            // Compare double values safely
-            return Double.compare(this.value, other.value) == 0;
-        }
-
-        @Override
-        public String toString() {
-            return value + " ft";
-        }
+    // One generic method replaces demonstrateLengthAddition + demonstrateWeightAddition
+    public static <U extends IMeasurable> Quantity<U> demonstrateAddition(
+            Quantity<U> q1, Quantity<U> q2) {
+        Quantity<U> result = q1.add(q2);
+        System.out.println(q1 + " + " + q2 + " = " + result);
+        return result;
     }
 
-    public static class Inches {
-
-        private final double value;
-
-        public Inches(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            if (this == object) return true;
-
-            if (object == null || getClass() != object.getClass()) return false;
-
-            Inches inches = (Inches) object;
-
-            return Double.compare(this.value, inches.value) == 0;
-
-        }
-
-        public String toString() {
-            return value + " ft ";
-        }
-
+    // Overload for explicit target unit
+    public static <U extends IMeasurable> Quantity<U> demonstrateAddition(
+            Quantity<U> q1, Quantity<U> q2, U targetUnit) {
+        Quantity<U> result = q1.add(q2, targetUnit);
+        System.out.println(q1 + " + " + q2 + " (in " + targetUnit.getUnitName() + ") = " + result);
+        return result;
     }
 
     public static void main(String[] args) {
+        SpringApplication.run(QuantityMeasurmentApplication.class, args);
 
-        //Demonstrate Feet and Inches Camparision
-        demonstrateLengthComparision(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES);
+        // ---------- Length demonstrations (UC1–UC8 behavior preserved) ----------
+        demonstrateEquality(
+                new Quantity<>(1.0, LengthUnit.FEET),
+                new Quantity<>(12.0, LengthUnit.INCHES));
 
-        //Demonstrate Yards and inches comparision
-        demonstrateLengthComparision(1.0, LengthUnit.YARDS, 36.0, LengthUnit.INCHES);
+        demonstrateConversion(
+                new Quantity<>(1.0, LengthUnit.FEET),
+                LengthUnit.INCHES);
 
-        //Demonstrate Centimeters and Inches comparison
-        demonstrateLengthComparision(100.0, LengthUnit.CENTIMETERS, 39.3701, LengthUnit.INCHES);
+        demonstrateAddition(
+                new Quantity<>(1.0, LengthUnit.FEET),
+                new Quantity<>(12.0, LengthUnit.INCHES),
+                LengthUnit.FEET);
 
-        //Domonstrate Feet and Yard comparison
-        demonstrateLengthComparision(3.0, LengthUnit.FEET, 1.0, LengthUnit.YARDS);
+        // ---------- Weight demonstrations (UC9 behavior preserved) ----------
+        demonstrateEquality(
+                new Quantity<>(1.0, WeightUnit.KILOGRAM),
+                new Quantity<>(1000.0, WeightUnit.GRAM));
 
-        //Demonstrate Centimeteres and Feet comparision
-        demonstrateLengthComparision(30.48, LengthUnit.CENTIMETERS, 1.0, LengthUnit.FEET);
+        demonstrateConversion(
+                new Quantity<>(1.0, WeightUnit.KILOGRAM),
+                WeightUnit.GRAM);
 
-        System.out.println(
-                demonstrateLengthAddition(
-                        1.0,
-                        LengthUnit.FEET,
-                        12.0,
-                        LengthUnit.INCHES,
-                        LengthUnit.FEET));
+        demonstrateAddition(
+                new Quantity<>(1.0, WeightUnit.KILOGRAM),
+                new Quantity<>(1000.0, WeightUnit.GRAM),
+                WeightUnit.KILOGRAM);
 
-        System.out.println(
-                demonstrateLengthAddition(
-                        1.0,
-                        LengthUnit.FEET,
-                        12.0,
-                        LengthUnit.INCHES,
-                        LengthUnit.INCHES));
+        // ---------- Cross-category safety demo ----------
+        boolean crossCategory = new Quantity<>(1.0, LengthUnit.FEET)
+                .equals(new Quantity<>(1.0, WeightUnit.KILOGRAM));
+        System.out.println("1 FEET equals 1 KILOGRAM? " + crossCategory); // false
 
-        System.out.println(
-                demonstrateLengthAddition(
-                        1.0,
-                        LengthUnit.FEET,
-                        12.0,
-                        LengthUnit.INCHES,
-                        LengthUnit.YARDS));
-
-        System.out.println(
-                demonstrateLengthAddition(
-                        1.0,
-                        LengthUnit.YARDS,
-                        3.0,
-                        LengthUnit.FEET,
-                        LengthUnit.YARDS));
-
-        System.out.println(
-                demonstrateLengthAddition(
-                        36.0,
-                        LengthUnit.INCHES,
-                        1.0,
-                        LengthUnit.YARDS,
-                        LengthUnit.FEET));
-
-        System.out.println(
-                demonstrateLengthAddition(
-                        2.54,
-                        LengthUnit.CENTIMETERS,
-                        1.0,
-                        LengthUnit.INCHES,
-                        LengthUnit.CENTIMETERS));
-
-        System.out.println(
-                demonstrateLengthAddition(
-                        5.0,
-                        LengthUnit.FEET,
-                        0.0,
-                        LengthUnit.INCHES,
-                        LengthUnit.YARDS));
-
-        System.out.println(
-                demonstrateLengthAddition(
-                        5.0,
-                        LengthUnit.FEET,
-                        -2.0,
-                        LengthUnit.FEET,
-                        LengthUnit.INCHES));
-
-
-        //weight related code
-        //Equality checks
-        System.out.println(demonstrateWeightEquality(1.0, WeightUnit.KILOGRAM,
-                1000.0, WeightUnit.GRAM));
-
-        System.out.println(
-                demonstrateWeightEquality(
-                        1.0, WeightUnit.POUND,
-                        453.592, WeightUnit.GRAM));
-
-        System.out.println(
-                demonstrateWeightEquality(
-                        500.0, WeightUnit.GRAM,
-                        0.5, WeightUnit.KILOGRAM));
-
-        // Conversions
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.KILOGRAM)
-                        .convertTo(WeightUnit.GRAM));
-
-        System.out.println(
-                new Weight(1000.0, WeightUnit.GRAM)
-                        .convertTo(WeightUnit.KILOGRAM));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.POUND)
-                        .convertTo(WeightUnit.GRAM));
-
-        System.out.println(
-                new Weight(1000.0, WeightUnit.MILLIGRAM)
-                        .convertTo(WeightUnit.GRAM));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.TONNE)
-                        .convertTo(WeightUnit.KILOGRAM));
-
-
-        // Addition
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.KILOGRAM)
-                        .add(new Weight(500.0, WeightUnit.GRAM)));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.POUND)
-                        .add(new Weight(453.592, WeightUnit.GRAM)));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.TONNE)
-                        .add(new Weight(500.0, WeightUnit.KILOGRAM)));
-
-        // Addition with Explicit Target Unit
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.KILOGRAM)
-                        .add(
-                                new Weight(500.0, WeightUnit.GRAM),
-                                WeightUnit.GRAM));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.POUND)
-                        .add(
-                                new Weight(453.592, WeightUnit.GRAM),
-                                WeightUnit.KILOGRAM));
-
-        System.out.println(
-                new Weight(1.0, WeightUnit.TONNE)
-                        .add(
-                                new Weight(500.0, WeightUnit.KILOGRAM),
-                                WeightUnit.TONNE));
-
+        // Note: the following would NOT compile — that's the point.
+        // demonstrateEquality(new Quantity<>(1.0, LengthUnit.FEET),
+        //                      new Quantity<>(1.0, WeightUnit.KILOGRAM));
     }
-
-    private static boolean demonstrateLengthComparision(double value1, LengthUnit lengthUnitOne, double value2, LengthUnit lengthUnitTwo)
-    {
-             Length length1 = new Length(value1, lengthUnitOne);
-             Length length2 = new Length(value2, lengthUnitTwo);
-
-             boolean result = demonstrateLengthEquality(length1, length2);
-
-             System.out.println(value1+" "+lengthUnitOne+" and "+value2 + " "+lengthUnitTwo+" ? " +result);
-            return result;
-    }
-
-    static boolean demonstrateLengthEquality(Length length1, Length length2) {
-        return length1.equals(length2);
-    }
-
-    public static boolean demonstrateWeightEquality(
-            double value1,
-            WeightUnit unit1,
-            double value2,
-            WeightUnit unit2) {
-
-        Weight weight1 = new Weight(value1, unit1);
-        Weight weight2 = new Weight(value2, unit2);
-
-        return weight1.equals(weight2);
-    }
-
-    public static Weight demonstrateWeightAddition(
-            double value1,
-            WeightUnit unit1,
-            double value2,
-            WeightUnit unit2) {
-
-        return new Weight(value1, unit1)
-                .add(new Weight(value2, unit2));
-    }
-
-    public static Weight demonstrateWeightAddition(
-            double value1,
-            WeightUnit unit1,
-            double value2,
-            WeightUnit unit2,
-            WeightUnit targetUnit) {
-
-        return new Weight(value1, unit1)
-                .add(new Weight(value2, unit2), targetUnit);
-    }
-
-
 }

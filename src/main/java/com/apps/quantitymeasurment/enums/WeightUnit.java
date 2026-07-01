@@ -1,6 +1,8 @@
 package com.apps.quantitymeasurment.enums;
 
-public enum WeightUnit {
+import com.apps.quantitymeasurment.IMeasurable;
+
+public enum WeightUnit implements IMeasurable {
 
     //conversion factor to the base unit(grams)
     KILOGRAM(1000.0),
@@ -33,6 +35,11 @@ public enum WeightUnit {
     public double convertFromBaseUnit(double baseValue)
     {
         return baseValue/conversionFactor;
+    }
+
+    @Override
+    public String getUnitName() {
+        return name();
     }
 
 }
