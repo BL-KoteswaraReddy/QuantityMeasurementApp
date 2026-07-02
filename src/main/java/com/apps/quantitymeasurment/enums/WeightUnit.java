@@ -42,4 +42,14 @@ public enum WeightUnit implements IMeasurable {
         return name();
     }
 
+    @Override
+    public boolean supportsArithmetic() {
+        return false;
+    }
+
+    @Override
+    public void validateOperationSupport(String operation) {
+
+    }
+
 }

@@ -37,5 +37,25 @@ public enum LengthUnit implements IMeasurable {
         return name();
     }
 
+    @Override
+    public boolean supportArithmetic() {
+        return IMeasurable.super.supportArithmetic();
+    }
+
+    @Override
+    public void validateOperationSupport() {
+        IMeasurable.super.validateOperationSupport();
+    }
+
+    @Override
+    public boolean supportsArithmetic() {
+        return false;
+    }
+
+    @Override
+    public void validateOperationSupport(String operation) {
+
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.apps.quantitymeasurment;
 
 import com.apps.quantitymeasurment.enums.LengthUnit;
+import com.apps.quantitymeasurment.enums.TemperatureUnit;
 import com.apps.quantitymeasurment.enums.VolumeUnit;
 import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.springframework.boot.SpringApplication;
@@ -92,6 +93,45 @@ public class QuantityMeasurmentApplication {
         System.out.println("1 GALLON -> L: " + v3.convertTo(VolumeUnit.LITRE));
         System.out.println("1 L + 1000 mL = " + v1.add(v2));
         System.out.println("1 L + 1 GALLON in GALLON = " + v1.add(v3, VolumeUnit.GALLON));
+
+
+
+// ---------- Temperature: equality ----------
+        demonstrateEquality(new Quantity<>(0.0, TemperatureUnit.CELSIUS), new Quantity<>(32.0, TemperatureUnit.FAHRENHEIT));
+        demonstrateEquality(new Quantity<>(100.0, TemperatureUnit.CELSIUS), new Quantity<>(373.15, TemperatureUnit.KELVIN));
+        demonstrateEquality(new Quantity<>(-40.0, TemperatureUnit.CELSIUS), new Quantity<>(-40.0, TemperatureUnit.FAHRENHEIT));
+
+// ---------- Temperature: conversion ----------
+        demonstrateConversion(new Quantity<>(100.0, TemperatureUnit.CELSIUS), TemperatureUnit.FAHRENHEIT);
+        demonstrateConversion(new Quantity<>(32.0, TemperatureUnit.FAHRENHEIT), TemperatureUnit.CELSIUS);
+        demonstrateConversion(new Quantity<>(0.0, TemperatureUnit.CELSIUS), TemperatureUnit.KELVIN);
+
+// ---------- Temperature: unsupported arithmetic (error handling demo) ----------
+        try {
+            new Quantity<>(100.0, TemperatureUnit.CELSIUS).add(new Quantity<>(50.0, TemperatureUnit.CELSIUS));
+        } catch (UnsupportedOperationException e) {
+            System.out.println("Expected error (add): " + e.getMessage());
+        }
+
+        try {
+            new Quantity<>(100.0, TemperatureUnit.CELSIUS).subtract(new Quantity<>(50.0, TemperatureUnit.CELSIUS));
+        } catch (UnsupportedOperationException e) {
+            System.out.println("Expected error (subtract): " + e.getMessage());
+        }
+
+        try {
+            new Quantity<>(100.0, TemperatureUnit.CELSIUS).divide(new Quantity<>(50.0, TemperatureUnit.CELSIUS));
+        } catch (UnsupportedOperationException e) {
+            System.out.println("Expected error (divide): " + e.getMessage());
+        }
+
+// ---------- Temperature cross-category safety ----------
+        System.out.println("100 CELSIUS equals 100 FEET? " +
+                new Quantity<>(100.0, TemperatureUnit.CELSIUS).equals(new Quantity<>(100.0, LengthUnit.FEET))); // false
+
+
+
+
     }
 
     // Add alongside the existing demonstrateEquality/Conversion/Addition methods
@@ -116,4 +156,7 @@ public class QuantityMeasurmentApplication {
         System.out.println(q1 + " / " + q2 + " = " + result);
         return result;
     }
+
+
+
 }
