@@ -93,4 +93,27 @@ public class QuantityMeasurmentApplication {
         System.out.println("1 L + 1000 mL = " + v1.add(v2));
         System.out.println("1 L + 1 GALLON in GALLON = " + v1.add(v3, VolumeUnit.GALLON));
     }
+
+    // Add alongside the existing demonstrateEquality/Conversion/Addition methods
+
+    public static <U extends IMeasurable> Quantity<U> demonstrateSubtraction(
+            Quantity<U> q1, Quantity<U> q2) {
+        Quantity<U> result = q1.subtract(q2);
+        System.out.println(q1 + " - " + q2 + " = " + result);
+        return result;
+    }
+
+    public static <U extends IMeasurable> Quantity<U> demonstrateSubtraction(
+            Quantity<U> q1, Quantity<U> q2, U targetUnit) {
+        Quantity<U> result = q1.subtract(q2, targetUnit);
+        System.out.println(q1 + " - " + q2 + " (in " + targetUnit.getUnitName() + ") = " + result);
+        return result;
+    }
+
+    public static <U extends IMeasurable> double demonstrateDivision(
+            Quantity<U> q1, Quantity<U> q2) {
+        double result = q1.divide(q2);
+        System.out.println(q1 + " / " + q2 + " = " + result);
+        return result;
+    }
 }

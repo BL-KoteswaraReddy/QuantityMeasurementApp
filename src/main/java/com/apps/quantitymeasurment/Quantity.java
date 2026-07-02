@@ -112,4 +112,86 @@ public class Quantity<U extends IMeasurable> {
         return Math.abs(thisInBase - otherInBase) < EPSILON;
 
     }
+
+    /**
+     * Subtracts {@code other} from this quantity, returning the result in
+     * this quantity's own unit.
+     * <p>Non-commutative: {@code A.subtract(B)} is not generally equal to
+     * {@code B.subtract(A)} — the sign flips.</p>
+     *
+     * @param other the quantity to subtract; must be non-null and same category
+     * @return a new {@code Quantity<U>} representing the difference
+     * @throws IllegalArgumentException if {@code other} is null or belongs
+     *         to a different measurement category
+     */
+    public Quantity<U> subtract(Quantity<U> other) {
+        return subtract(other, this.unit);
+    }
+
+    /**
+     * Subtracts {@code other} from this quantity, expressing the result in
+     * {@code targetUnit}.
+     *
+     * @param other the quantity to subtract
+     * @param targetUnit the unit the result should be expressed in
+     * @return a new {@code Quantity<U>} representing the difference
+     * @throws IllegalArgumentException if {@code other} or {@code targetUnit}
+     *         is null, or if {@code other} belongs to a different category
+     */
+    public Quantity<U> subtract(Quantity<U> other, U targetUnit) {
+        validateOperand(other);
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        double baseResult = this.convertToBaseUnit() - other.convertToBaseUnit();
+        double resultValue = targetUnit.convertFromBaseUnit(baseResult);
+        double rounded = Math.round(resultValue * 100.0) / 100.0;
+
+        return new Quantity<>(rounded, targetUnit);
+    }
+
+    /**
+     * Divides this quantity by {@code other}, returning a dimensionless
+     * scalar ratio. Units cancel out — the result carries no unit.
+     * <p>Non-commutative: {@code A.divide(B)} is the reciprocal of
+     * {@code B.divide(A)}.</p>
+     *
+     * @param other the divisor quantity; must be non-null, same category,
+     *              and non-zero
+     * @return the ratio {@code this / other} as a raw {@code double}
+     * @throws IllegalArgumentException if {@code other} is null or belongs
+     *         to a different measurement category
+     * @throws ArithmeticException if {@code other} represents zero
+     *         (division by zero)
+     */
+    public double divide(Quantity<U> other) {
+        validateOperand(other);
+
+        double otherInBase = other.convertToBaseUnit();
+        if (otherInBase == 0.0) {
+            throw new ArithmeticException("Cannot divide by zero quantity");
+        }
+
+        return this.convertToBaseUnit() / otherInBase;
+    }
+
+    /**
+     * Shared validation for arithmetic operands: non-null, finite value,
+     * and same measurement category as {@code this}.
+     */
+    private void validateOperand(Quantity<U> other) {
+        if (other == null) {
+            throw new IllegalArgumentException("Quantity cannot be null");
+        }
+        if (this.unit.getClass() != other.unit.getClass()) {
+            throw new IllegalArgumentException(
+                    "Cannot operate on different measurement categories: "
+                            + this.unit.getClass().getSimpleName()
+                            + " vs " + other.unit.getClass().getSimpleName());
+        }
+        if (!Double.isFinite(other.value)) {
+            throw new IllegalArgumentException("Invalid value in operand");
+        }
+    }
 }
