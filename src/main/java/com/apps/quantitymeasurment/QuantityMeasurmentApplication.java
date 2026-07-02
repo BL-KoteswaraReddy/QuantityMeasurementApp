@@ -1,6 +1,7 @@
 package com.apps.quantitymeasurment;
 
 import com.apps.quantitymeasurment.enums.LengthUnit;
+import com.apps.quantitymeasurment.enums.VolumeUnit;
 import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -79,5 +80,17 @@ public class QuantityMeasurmentApplication {
         // Note: the following would NOT compile — that's the point.
         // demonstrateEquality(new Quantity<>(1.0, LengthUnit.FEET),
         //                      new Quantity<>(1.0, WeightUnit.KILOGRAM));
+
+
+        Quantity<VolumeUnit> v1 = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> v2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        Quantity<VolumeUnit> v3 = new Quantity<>(1.0, VolumeUnit.GALLON);
+
+        System.out.println("1 L == 1000 mL? " + v1.equals(v2));
+        System.out.println("1 L == 1 GALLON? " + v1.equals(v3));
+        System.out.println("1 L -> mL: " + v1.convertTo(VolumeUnit.MILLILITRE));
+        System.out.println("1 GALLON -> L: " + v3.convertTo(VolumeUnit.LITRE));
+        System.out.println("1 L + 1000 mL = " + v1.add(v2));
+        System.out.println("1 L + 1 GALLON in GALLON = " + v1.add(v3, VolumeUnit.GALLON));
     }
 }

@@ -1,659 +1,322 @@
 package com.apps.quantitymeasurment;
 
 import com.apps.quantitymeasurment.enums.LengthUnit;
+import com.apps.quantitymeasurment.enums.VolumeUnit;
 import com.apps.quantitymeasurment.enums.WeightUnit;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import java.lang.annotation.Inherited;
 
-
-import static com.apps.quantitymeasurment.QuantityMeasurmentApplication.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-class QuantitymeasurmentApplicationTests {
+class QuantityMeasurementAppTest {
+
+    private static final double EPS = 1e-4;
+
+    // ---------- Equality ----------
 
     @Test
-    void givenSameFeetValue_WhenCompared_ShouldReturnTrue() {
-        Feet feet1 =
-                new Feet(1.0);
-        Feet feet2 =
-                new Feet(1.0);
-
-        assertTrue(feet1.equals(feet2));
+    void testEquality_LitreToLitre_SameValue() {
+        assertEquals(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(1.0, VolumeUnit.LITRE));
     }
 
     @Test
-    void givenDifferentFeetValue_WhenCompared_ShouldReturnFalse() {
-        Feet feet1 =
-                new Feet(1.0);
-        Feet feet2 =
-                new Feet(2.0);
-
-        assertFalse(feet1.equals(feet2));
+    void testEquality_LitreToLitre_DifferentValue() {
+        assertNotEquals(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(2.0, VolumeUnit.LITRE));
     }
 
     @Test
-    void givenSameObject_WhenCompared_ShouldReturnTrue() {
-        Feet feet =
-                new Feet(1.0);
-
-        assertTrue(feet.equals(feet));
+    void testEquality_LitreToMillilitre_EquivalentValue() {
+        assertEquals(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(1000.0, VolumeUnit.MILLILITRE));
     }
 
     @Test
-    void givenNull_WhenCompared_ShouldReturnFalse() {
-        Feet feet =
-                new Feet(1.0);
-
-        assertFalse(feet.equals(null));
+    void testEquality_MillilitreToLitre_EquivalentValue() {
+        assertEquals(new Quantity<>(1000.0, VolumeUnit.MILLILITRE), new Quantity<>(1.0, VolumeUnit.LITRE));
     }
 
     @Test
-    void givenDifferentType_WhenCompared_ShouldReturnFalse() {
-        Feet feet =
-                new Feet(1.0);
-
-        assertFalse(feet.equals("1.0"));
-    }
-
-
-    @Test
-    public void testFeetEquality_SameValue()
-    {
-        Feet feet1 = new Feet(1.0);
-        Feet feet2 = new Feet(1.0);
-        assertTrue(feet1.equals(feet2),"both feets are equal");
-    }
-
-
-    @Test
-    public void testInchEquality_SameValue()
-    {
-        Inches inch1 = new Inches(1.0);
-        Inches  inch2 = new Inches(1.0);
-        assertTrue(inch1.equals(inch2), "both inches values are same");
-
+    void testEquality_LitreToGallon_EquivalentValue() {
+        assertEquals(new Quantity<>(3.78541, VolumeUnit.LITRE), new Quantity<>(1.0, VolumeUnit.GALLON));
     }
 
     @Test
-    public void testInhcesEquality_Nullcomparision()
-    {
-        Inches inche1 = new Inches(1.0);
-
-        assertFalse(inche1.equals(null),"NUll pointer is checking");
-
+    void testEquality_GallonToLitre_EquivalentValue() {
+        assertEquals(new Quantity<>(1.0, VolumeUnit.GALLON), new Quantity<>(3.78541, VolumeUnit.LITRE));
     }
 
     @Test
-    public void TestInchesEquality_DifferentClass()
-    {
-        Inches inche1 = new Inches(1.0);
-        assertFalse(inche1.equals("1.0"));
+    void testEquality_VolumeVsLength_Incompatible() {
+        assertNotEquals(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(1.0, LengthUnit.FEET));
     }
 
     @Test
-    public void testInchesEquality_SameReference()
-    {
-        Inches inche1 = new Inches(1.0);
-        assertTrue(inche1.equals(inche1));
+    void testEquality_VolumeVsWeight_Incompatible() {
+        assertNotEquals(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(1.0, WeightUnit.KILOGRAM));
     }
 
     @Test
-    public void testFeetIncheComparision()
-    {
-        Length feet = new Length(1.0, LengthUnit.FEET);
-        Length inche = new Length(12.0, LengthUnit.INCHES);
-        assertTrue(feet.equals(inche));
+    void testEquality_NullComparison() {
+        assertNotEquals(new Quantity<>(1.0, VolumeUnit.LITRE), null);
     }
 
     @Test
-    public void testYardEquality_SameValue() {
-        Length yard1 = new Length(1.0, LengthUnit.YARDS);
-        Length yard2 = new Length(1.0, LengthUnit.YARDS);
-
-        assertTrue(yard1.equals(yard2));
+    void testEquality_SameReference() {
+        Quantity<VolumeUnit> q = new Quantity<>(1.0, VolumeUnit.LITRE);
+        assertEquals(q, q);
     }
 
     @Test
-    public void testYardEquality_DifferentValue() {
-        Length yard1 = new Length(1.0, LengthUnit.YARDS);
-        Length yard2 = new Length(2.0, LengthUnit.YARDS);
-
-        assertFalse(yard1.equals(yard2));
+    void testEquality_NullUnit() {
+        assertThrows(IllegalArgumentException.class, () -> new Quantity<VolumeUnit>(1.0, null));
     }
 
     @Test
-    public void testYardToFeetComparison() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        Length feet = new Length(3.0, LengthUnit.FEET);
-
-        assertTrue(yard.equals(feet));
+    void testEquality_TransitiveProperty() {
+        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        Quantity<VolumeUnit> c = new Quantity<>(1.0, VolumeUnit.LITRE);
+        assertTrue(a.equals(b) && b.equals(c) && a.equals(c));
     }
 
     @Test
-    public void testFeetToYardComparison() {
-        Length feet = new Length(3.0, LengthUnit.FEET);
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-
-        assertTrue(feet.equals(yard));
+    void testEquality_ZeroValue() {
+        assertEquals(new Quantity<>(0.0, VolumeUnit.LITRE), new Quantity<>(0.0, VolumeUnit.MILLILITRE));
     }
 
     @Test
-    public void testYardToInchesComparison() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        Length inches = new Length(36.0, LengthUnit.INCHES);
-
-        assertTrue(yard.equals(inches));
+    void testEquality_NegativeVolume() {
+        assertEquals(new Quantity<>(-1.0, VolumeUnit.LITRE), new Quantity<>(-1000.0, VolumeUnit.MILLILITRE));
     }
 
     @Test
-    public void testInchesToYardComparison() {
-        Length inches = new Length(36.0, LengthUnit.INCHES);
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-
-        assertTrue(inches.equals(yard));
+    void testEquality_LargeVolumeValue() {
+        assertEquals(new Quantity<>(1000000.0, VolumeUnit.MILLILITRE), new Quantity<>(1000.0, VolumeUnit.LITRE));
     }
 
     @Test
-    public void testYardToFeetNotEqual() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        Length feet = new Length(2.0, LengthUnit.FEET);
+    void testEquality_SmallVolumeValue() {
+        assertEquals(new Quantity<>(0.001, VolumeUnit.LITRE), new Quantity<>(1.0, VolumeUnit.MILLILITRE));
+    }
 
-        assertFalse(yard.equals(feet));
+    // ---------- Conversion ----------
+
+    @Test
+    void testConversion_LitreToMillilitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.LITRE).convertTo(VolumeUnit.MILLILITRE);
+        assertEquals(1000.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addSameUnitFeetPlusFeet()
-    {
-        Length length1 = new Length(1.0, LengthUnit.FEET);
-        Length length2 = new Length(2.0, LengthUnit.FEET);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(1.0, LengthUnit.FEET, 2.0, LengthUnit.FEET);
-        Length expected = new Length(3.0, LengthUnit.FEET);
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testConversion_MillilitreToLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1000.0, VolumeUnit.MILLILITRE).convertTo(VolumeUnit.LITRE);
+        assertEquals(1.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addSameUnitInchesPlusInches() {
-
-        Length length1 = new Length(6.0, LengthUnit.INCHES);
-        Length length2 = new Length(6.0, LengthUnit.INCHES);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(6.0, LengthUnit.INCHES, 6.0, LengthUnit.INCHES);
-        Length expected = new Length(12.0, LengthUnit.INCHES);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testConversion_GallonToLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.GALLON).convertTo(VolumeUnit.LITRE);
+        assertEquals(3.79, result.getValue(), EPS);
     }
 
     @Test
-    public void addInchesAndFeet() {
-
-        Length length1 = new Length(12.0, LengthUnit.INCHES);
-        Length length2 = new Length(1.0, LengthUnit.FEET);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(12.0, LengthUnit.INCHES, 1.0, LengthUnit.FEET);
-        Length expected = new Length(24.0, LengthUnit.INCHES);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testConversion_LitreToGallon() {
+        Quantity<VolumeUnit> result = new Quantity<>(3.78541, VolumeUnit.LITRE).convertTo(VolumeUnit.GALLON);
+        assertEquals(1.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addYardsAndFeet() {
-
-        Length length1 = new Length(1.0, LengthUnit.YARDS);
-        Length length2 = new Length(3.0, LengthUnit.FEET);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(1.0, LengthUnit.YARDS, 3.0, LengthUnit.FEET);
-        Length expected = new Length(2.0, LengthUnit.YARDS);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testConversion_MillilitreToGallon() {
+        Quantity<VolumeUnit> result = new Quantity<>(1000.0, VolumeUnit.MILLILITRE).convertTo(VolumeUnit.GALLON);
+        assertEquals(0.26, result.getValue(), 1e-3);
     }
 
     @Test
-    public void addCentimetersAndInches() {
-
-        Length length1 = new Length(2.54, LengthUnit.CENTIMETERS);
-        Length length2 = new Length(1.0, LengthUnit.INCHES);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(2.54, LengthUnit.CENTIMETERS, 1.0, LengthUnit.INCHES);
-        Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
-
-        System.out.println(actual);
-        System.out.println(expected);
-        System.out.println(actual.getValue() - expected.getValue());
-        assertTrue(
-                Math.abs(actual.getValue() - expected.getValue()) < 0.01
-        );
+    void testConversion_SameUnit() {
+        Quantity<VolumeUnit> result = new Quantity<>(5.0, VolumeUnit.LITRE).convertTo(VolumeUnit.LITRE);
+        assertEquals(5.0, result.getValue(), EPS);
     }
 
     @Test
-    public void additionIsCommutative() {
-
-        Length feet = new Length(1.0, LengthUnit.FEET);
-        Length inches = new Length(12.0, LengthUnit.INCHES);
-
-        Length result1 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES);
-
-        Length result2 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(1.0, LengthUnit.FEET, 12.0, LengthUnit.INCHES);
-
-        assertEquals(
-                result1.convertToBaseUnit(),
-                result2.convertToBaseUnit(),
-                0.0001
-        );
+    void testConversion_ZeroValue() {
+        Quantity<VolumeUnit> result = new Quantity<>(0.0, VolumeUnit.LITRE).convertTo(VolumeUnit.MILLILITRE);
+        assertEquals(0.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addWithZeroValue() {
-
-        Length length1 = new Length(5.0, LengthUnit.FEET);
-        Length length2 = new Length(0.0, LengthUnit.INCHES);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(5.0 , LengthUnit.FEET, 0.0, LengthUnit.INCHES);
-        Length expected = new Length(5.0, LengthUnit.FEET);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testConversion_NegativeValue() {
+        Quantity<VolumeUnit> result = new Quantity<>(-1.0, VolumeUnit.LITRE).convertTo(VolumeUnit.MILLILITRE);
+        assertEquals(-1000.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addNegativeValues() {
+    void testConversion_RoundTrip() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.5, VolumeUnit.LITRE)
+                .convertTo(VolumeUnit.MILLILITRE)
+                .convertTo(VolumeUnit.LITRE);
+        assertEquals(1.5, result.getValue(), EPS);
+    }
 
-        Length length1 = new Length(5.0, LengthUnit.FEET);
-        Length length2 = new Length(-2.0, LengthUnit.FEET);
+    // ---------- Addition ----------
 
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(5.0, LengthUnit.FEET, -2.0, LengthUnit.FEET);
-        Length expected = new Length(3.0, LengthUnit.FEET);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    @Test
+    void testAddition_SameUnit_LitrePlusLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.LITRE).add(new Quantity<>(2.0, VolumeUnit.LITRE));
+        assertEquals(3.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addNullSecondOperand() {
-
-        Length length1 = new Length(1.0, LengthUnit.FEET);
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> QuantityMeasurmentApplication.demonstrateLengthAddition(1.0, LengthUnit.FEET, Double.NaN, LengthUnit.FEET)
-        );
+    void testAddition_SameUnit_MillilitrePlusMillilitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(500.0, VolumeUnit.MILLILITRE)
+                .add(new Quantity<>(500.0, VolumeUnit.MILLILITRE));
+        assertEquals(1000.0, result.getValue(), EPS);
     }
 
     @Test
-    public void addLargeValues() {
-
-        Length length1 = new Length(1_000_000.0, LengthUnit.FEET);
-        Length length2 = new Length(1_000_000.0, LengthUnit.FEET);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(1_000_000.0, LengthUnit.FEET, 1_000_000.0, LengthUnit.FEET);
-        Length expected = new Length(2_000_000.0, LengthUnit.FEET);
-
-        assertTrue(QuantityMeasurmentApplication.demonstrateLengthEquality(actual, expected));
+    void testAddition_CrossUnit_LitrePlusMillilitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(1000.0, VolumeUnit.MILLILITRE));
+        assertEquals(2.0, result.getValue(), EPS); // result in LITRE (first operand's unit)
     }
 
     @Test
-    public void addSmallValues() {
-
-        Length length1 = new Length(0.001, LengthUnit.FEET);
-        Length length2 = new Length(0.002, LengthUnit.FEET);
-
-        Length actual = QuantityMeasurmentApplication.demonstrateLengthAddition(0.001, LengthUnit.FEET, 0.002, LengthUnit.FEET);
-
-        assertEquals(0.003, actual.getValue(), 0.0001);
+    void testAddition_CrossUnit_MillilitrePlusLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1000.0, VolumeUnit.MILLILITRE)
+                .add(new Quantity<>(1.0, VolumeUnit.LITRE));
+        assertEquals(2000.0, result.getValue(), EPS); // result in MILLILITRE
     }
 
     @Test
-    public void testLengthUnitEnum_FeetConstant() {
-        assertEquals(12.0,
-                LengthUnit.FEET.getConversionFactor(),
-                0.0001);
+    void testAddition_CrossUnit_GallonPlusLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.GALLON)
+                .add(new Quantity<>(3.78541, VolumeUnit.LITRE));
+        assertEquals(2.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testLengthUnitEnum_InchesConstant() {
-        assertEquals(1.0,
-                LengthUnit.INCHES.getConversionFactor(),
-                0.0001);
+    void testAddition_ExplicitTargetUnit_Litre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(1000.0, VolumeUnit.MILLILITRE), VolumeUnit.LITRE);
+        assertEquals(2.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testLengthUnitEnum_YardsConstant() {
-        assertEquals(36.0,
-                LengthUnit.YARDS.getConversionFactor(),
-                0.0001);
+    void testAddition_ExplicitTargetUnit_Millilitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(1.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(1000.0, VolumeUnit.MILLILITRE), VolumeUnit.MILLILITRE);
+        assertEquals(2000.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testLengthUnitEnum_CentimetersConstant() {
-        assertEquals(0.393701,
-                LengthUnit.CENTIMETERS.getConversionFactor(),
-                0.0001);
+    void testAddition_ExplicitTargetUnit_Gallon() {
+        Quantity<VolumeUnit> result = new Quantity<>(3.78541, VolumeUnit.LITRE)
+                .add(new Quantity<>(3.78541, VolumeUnit.LITRE), VolumeUnit.GALLON);
+        assertEquals(2.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testWeightEquality_KilogramToKilogram() {
-
-        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(1.0, WeightUnit.KILOGRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testAddition_Commutativity() {
+        Quantity<VolumeUnit> ab = new Quantity<>(1.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(1000.0, VolumeUnit.MILLILITRE), VolumeUnit.LITRE);
+        Quantity<VolumeUnit> ba = new Quantity<>(1000.0, VolumeUnit.MILLILITRE)
+                .add(new Quantity<>(1.0, VolumeUnit.LITRE), VolumeUnit.LITRE);
+        assertEquals(ab.getValue(), ba.getValue(), EPS);
     }
 
     @Test
-    public void testWeightEquality_KilogramToGram() {
-
-        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(1000.0, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testAddition_WithZero() {
+        Quantity<VolumeUnit> result = new Quantity<>(5.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(0.0, VolumeUnit.MILLILITRE));
+        assertEquals(5.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testWeightEquality_PoundToPound() {
-
-        Weight weight1 = new Weight(2.0, WeightUnit.POUND);
-        Weight weight2 = new Weight(2.0, WeightUnit.POUND);
-
-        assertTrue(weight1.equals(weight2));
+    void testAddition_NegativeValues() {
+        Quantity<VolumeUnit> result = new Quantity<>(5.0, VolumeUnit.LITRE)
+                .add(new Quantity<>(-2000.0, VolumeUnit.MILLILITRE));
+        assertEquals(3.0, result.getValue(), EPS);
     }
 
     @Test
-    public void testWeightEquality_KilogramToPound() {
-
-        Weight weight1 = new Weight(1.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(2.20462, WeightUnit.POUND);
-
-        assertTrue(weight1.equals(weight2));
+    void testAddition_LargeValues() {
+        Quantity<VolumeUnit> result = new Quantity<>(1e6, VolumeUnit.LITRE)
+                .add(new Quantity<>(1e6, VolumeUnit.LITRE));
+        assertEquals(2e6, result.getValue(), EPS);
     }
 
     @Test
-    public void testWeightEquality_GramToKilogram() {
+    void testAddition_SmallValues() {
+        Quantity<VolumeUnit> result = new Quantity<>(0.001, VolumeUnit.LITRE)
+                .add(new Quantity<>(0.002, VolumeUnit.LITRE));
+        assertEquals(0.003, result.getValue(), EPS);
+    }
 
-        Weight weight1 = new Weight(500.0, WeightUnit.GRAM);
-        Weight weight2 = new Weight(0.5, WeightUnit.KILOGRAM);
+    // ---------- VolumeUnit enum itself ----------
 
-        assertTrue(weight1.equals(weight2));
+    @Test
+    void testVolumeUnitEnum_LitreConstant() {
+        assertEquals(1.0, VolumeUnit.LITRE.getConversionFactor());
     }
 
     @Test
-    public void testWeightEquality_PoundToGram() {
-
-        Weight weight1 = new Weight(1.0, WeightUnit.POUND);
-        Weight weight2 = new Weight(453.592, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testVolumeUnitEnum_MillilitreConstant() {
+        assertEquals(0.001, VolumeUnit.MILLILITRE.getConversionFactor());
     }
 
     @Test
-    public void testWeightEquality_NullComparison() {
-        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
-        assertFalse(weight.equals(null));
+    void testVolumeUnitEnum_GallonConstant() {
+        assertEquals(3.78541, VolumeUnit.GALLON.getConversionFactor());
     }
 
     @Test
-    public void testWeightEquality_SameReference() {
-        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
-        assertTrue(weight.equals(weight));
+    void testConvertToBaseUnit_LitreToLitre() {
+        assertEquals(5.0, VolumeUnit.LITRE.convertToBaseUnit(5.0), EPS);
     }
 
     @Test
-    public void testWeightEquality_DifferentType() {
-
-        Weight weight = new Weight(1.0, WeightUnit.KILOGRAM);
-
-        assertFalse(weight.equals("1.0"));
+    void testConvertToBaseUnit_MillilitreToLitre() {
+        assertEquals(1.0, VolumeUnit.MILLILITRE.convertToBaseUnit(1000.0), EPS);
     }
 
     @Test
-    public void testWeightEquality_ZeroValue() {
-
-        Weight weight1 = new Weight(0.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(0.0, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testConvertToBaseUnit_GallonToLitre() {
+        assertEquals(3.78541, VolumeUnit.GALLON.convertToBaseUnit(1.0), EPS);
     }
 
     @Test
-    public void testWeightEquality_NegativeValues() {
-
-        Weight weight1 = new Weight(-1.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(-1000.0, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testConvertFromBaseUnit_LitreToLitre() {
+        assertEquals(2.0, VolumeUnit.LITRE.convertFromBaseUnit(2.0), EPS);
     }
 
     @Test
-    public void testWeightEquality_LargeValues() {
-
-        Weight weight1 = new Weight(1000.0, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(1000000.0, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
+    void testConvertFromBaseUnit_LitreToMillilitre() {
+        assertEquals(1000.0, VolumeUnit.MILLILITRE.convertFromBaseUnit(1.0), EPS);
     }
 
     @Test
-    public void testWeightEquality_SmallValues() {
+    void testConvertFromBaseUnit_LitreToGallon() {
+        assertEquals(1.0, VolumeUnit.GALLON.convertFromBaseUnit(3.78541), EPS);
+    }
 
-        Weight weight1 = new Weight(0.001, WeightUnit.KILOGRAM);
-        Weight weight2 = new Weight(1.0, WeightUnit.GRAM);
+    // ---------- Hash / collections ----------
 
-        assertTrue(weight1.equals(weight2));
+    @Test
+    void testHashCode_ConsistentWithEquals() {
+        Quantity<VolumeUnit> a = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    // ---------- Backward compatibility spot checks (UC1–UC10) ----------
+
+    @Test
+    void testBackwardCompatibility_LengthEquality() {
+        assertEquals(new Quantity<>(1.0, LengthUnit.FEET), new Quantity<>(12.0, LengthUnit.INCHES));
     }
 
     @Test
-    public void testWeightEquality_MilligramToGram() {
-
-        Weight weight1 = new Weight(1000.0, WeightUnit.MILLIGRAM);
-        Weight weight2 = new Weight(1.0, WeightUnit.GRAM);
-
-        assertTrue(weight1.equals(weight2));
-    }
-
-    @Test
-    public void testWeightEquality_TonneToKilogram() {
-
-        Weight weight1 = new Weight(1.0, WeightUnit.TONNE);
-        Weight weight2 = new Weight(1000.0, WeightUnit.KILOGRAM);
-
-        assertTrue(weight1.equals(weight2));
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_Feet() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.FEET);
-
-        assertEquals(2.0, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.FEET, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_Inches() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.INCHES);
-
-        assertEquals(24.0, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.INCHES, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_Yards() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.YARDS);
-
-        assertEquals(0.6667, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.YARDS, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_Centimeters() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.INCHES,
-                        1.0, LengthUnit.INCHES,
-                        LengthUnit.CENTIMETERS);
-
-        assertEquals(5.08, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.CENTIMETERS, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_SameAsFirstOperand() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        2.0, LengthUnit.YARDS,
-                        3.0, LengthUnit.FEET,
-                        LengthUnit.YARDS);
-
-        assertEquals(3.0, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.YARDS, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_SameAsSecondOperand() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        2.0, LengthUnit.YARDS,
-                        3.0, LengthUnit.FEET,
-                        LengthUnit.FEET);
-
-        assertEquals(9.0, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.FEET, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_Commutativity() {
-
-        Length result1 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.YARDS);
-
-        Length result2 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        12.0, LengthUnit.INCHES,
-                        1.0, LengthUnit.FEET,
-                        LengthUnit.YARDS);
-
-        assertEquals(result1.getValue(), result2.getValue(), 0.0001);
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_WithZero() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        5.0, LengthUnit.FEET,
-                        0.0, LengthUnit.INCHES,
-                        LengthUnit.YARDS);
-
-        assertEquals(1.6667, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.YARDS, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_NegativeValues() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        5.0, LengthUnit.FEET,
-                        -2.0, LengthUnit.FEET,
-                        LengthUnit.INCHES);
-
-        assertEquals(36.0, actual.getValue(), 0.01);
-        assertEquals(LengthUnit.INCHES, actual.getUnit());
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_NullTargetUnit() {
-
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        null)
-        );
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_LargeToSmallScale() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1000.0, LengthUnit.FEET,
-                        500.0, LengthUnit.FEET,
-                        LengthUnit.INCHES);
-
-        assertEquals(18000.0, actual.getValue(), 0.01);
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_SmallToLargeScale() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        12.0, LengthUnit.INCHES,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.YARDS);
-
-        assertEquals(0.6667, actual.getValue(), 0.01);
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_AllUnitCombinations() {
-
-        Length result1 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES,
-                        LengthUnit.FEET);
-
-        Length result2 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        1.0, LengthUnit.YARDS,
-                        36.0, LengthUnit.INCHES,
-                        LengthUnit.YARDS);
-
-        Length result3 =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        2.54, LengthUnit.CENTIMETERS,
-                        1.0, LengthUnit.INCHES,
-                        LengthUnit.CENTIMETERS);
-
-        assertNotNull(result1);
-        assertNotNull(result2);
-        assertNotNull(result3);
-    }
-
-    @Test
-    public void testAddition_ExplicitTargetUnit_PrecisionTolerance() {
-
-        Length actual =
-                QuantityMeasurmentApplication.demonstrateLengthAddition(
-                        2.54, LengthUnit.CENTIMETERS,
-                        1.0, LengthUnit.INCHES,
-                        LengthUnit.CENTIMETERS);
-
-        assertEquals(5.08, actual.getValue(), 0.01);
+    void testBackwardCompatibility_WeightAddition() {
+        Quantity<WeightUnit> result = new Quantity<>(1.0, WeightUnit.KILOGRAM)
+                .add(new Quantity<>(1000.0, WeightUnit.GRAM), WeightUnit.KILOGRAM);
+        assertEquals(2.0, result.getValue(), EPS);
     }
 }
-

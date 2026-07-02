@@ -31,32 +31,17 @@ public class Quantity<U extends IMeasurable> {
         return unit.convertToBaseUnit(value);
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-
-        Quantity<?> other = (Quantity<?>) object;
-
-        // Cross-category safety: a foot must never equal a kilogram,
-        // even though both are ultimately just "double + unit".
-        if (this.unit.getClass() != other.unit.getClass()) {
-            return false;
-        }
-
-        double thisInBase = this.unit.convertToBaseUnit(this.value);
-        double otherInBase = other.unit.convertToBaseUnit(other.value);
-
-        return Double.compare(thisInBase, otherInBase) == 0;
-    }
 
     @Override
     public int hashCode() {
         // Hash on the base-unit value + category, so that equal quantities
         // (e.g. 1 FEET and 12 INCHES) always hash the same way,
         // preserving the equals/hashCode contract.
-        return Objects.hash(unit.getClass(), unit.convertToBaseUnit(value));
+        double baseValue = unit.convertToBaseUnit(value);
+        long rounded = Math.round(baseValue+1_000_000);
+        return Objects.hash(unit.getClass(), rounded);
     }
+
 
     public Quantity<U> convertTo(U targetUnit) {
         if (targetUnit == null) {
@@ -103,5 +88,28 @@ public class Quantity<U extends IMeasurable> {
     @Override
     public String toString() {
         return "Quantity(" + value + ", " + unit.getUnitName() + ")";
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if(this == object)
+            return true;
+        if(object == null || getClass()!=object.getClass())
+        return false;
+
+        Quantity<?> other = (Quantity<?>)object;
+        if(this.unit.getClass() != other.unit.getClass())
+            return false;
+
+        double thisInBase = this.unit.convertToBaseUnit(this.value);
+        double otherInBase = other.unit.convertToBaseUnit(other.value);
+
+        // Epsilon tolerance needed once conversion factors (like GALLON's
+        // 3.78541) introduce floating-point rounding across categories.
+        // Small enough to not affect exact UC1–UC10 comparisons.
+        final double EPSILON = 1e-6;
+        return Math.abs(thisInBase - otherInBase) < EPSILON;
+
     }
 }
