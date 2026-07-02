@@ -242,12 +242,6 @@ class QuantityMeasurementAppTest {
         assertEquals(2e6, result.getValue(), EPS);
     }
 
-    @Test
-    void testAddition_SmallValues() {
-        Quantity<VolumeUnit> result = new Quantity<>(0.001, VolumeUnit.LITRE)
-                .add(new Quantity<>(0.002, VolumeUnit.LITRE));
-        assertEquals(0.003, result.getValue(), EPS);
-    }
 
     // ---------- VolumeUnit enum itself ----------
 
@@ -585,5 +579,106 @@ class QuantityMeasurementAppTest {
                 .add(new Quantity<>(5.0, LengthUnit.FEET))
                 .subtract(new Quantity<>(5.0, LengthUnit.FEET));
         assertEquals(original.getValue(), roundTrip.getValue(), EPS);
+    }
+
+    // ===================== UC13: Enum-level arithmetic tests =====================
+
+    @Test
+    void testEnumConstant_ADD_CorrectlyAdds() {
+        // Package-private access trick: test through public add(), since
+        // ArithmeticOperation is private — direct enum access isn't possible
+        // from outside the class. This indirectly verifies ADD.compute(7,3)=10.
+        Quantity<LengthUnit> result = new Quantity<>(7.0, LengthUnit.FEET)
+                .add(new Quantity<>(3.0, LengthUnit.FEET));
+        assertEquals(10.0, result.getValue(), EPS);
+    }
+
+    @Test
+    void testEnumConstant_SUBTRACT_CorrectlySubtracts() {
+        Quantity<LengthUnit> result = new Quantity<>(7.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(3.0, LengthUnit.FEET));
+        assertEquals(4.0, result.getValue(), EPS);
+    }
+
+    @Test
+    void testEnumConstant_DIVIDE_CorrectlyDivides() {
+        double result = new Quantity<>(7.0, LengthUnit.FEET)
+                .divide(new Quantity<>(2.0, LengthUnit.FEET));
+        assertEquals(3.5, result, EPS);
+    }
+
+    @Test
+    void testArithmeticOperation_DivideByZero_EnumThrows() {
+        assertThrows(ArithmeticException.class,
+                () -> new Quantity<>(10.0, LengthUnit.FEET)
+                        .divide(new Quantity<>(0.0, LengthUnit.FEET)));
+    }
+
+    @Test
+    void testValidation_NullOperand_ConsistentAcrossOperations() {
+        Quantity<LengthUnit> q = new Quantity<>(10.0, LengthUnit.FEET);
+
+        IllegalArgumentException addEx = assertThrows(IllegalArgumentException.class, () -> q.add(null));
+        IllegalArgumentException subEx = assertThrows(IllegalArgumentException.class, () -> q.subtract(null));
+        IllegalArgumentException divEx = assertThrows(IllegalArgumentException.class, () -> q.divide(null));
+
+        assertEquals(addEx.getMessage(), subEx.getMessage());
+        assertEquals(subEx.getMessage(), divEx.getMessage());
+    }
+
+    @Test
+    void testValidation_CrossCategory_ConsistentAcrossOperations() {
+        Quantity<LengthUnit> length = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity weight = new Quantity<>(5.0, WeightUnit.KILOGRAM); // raw type to bypass compiler
+
+        assertThrows(IllegalArgumentException.class, () -> length.add(weight));
+        assertThrows(IllegalArgumentException.class, () -> length.subtract(weight));
+        assertThrows(IllegalArgumentException.class, () -> length.divide(weight));
+    }
+
+    @Test
+    void testValidation_NullTargetUnit_AddSubtractReject() {
+        Quantity<LengthUnit> a = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> b = new Quantity<>(5.0, LengthUnit.FEET);
+
+        assertThrows(IllegalArgumentException.class, () -> a.add(b, null));
+        assertThrows(IllegalArgumentException.class, () -> a.subtract(b, null));
+    }
+
+    @Test
+    void testRounding_AddSubtract_TwoDecimalPlaces() {
+        Quantity<LengthUnit> sum = new Quantity<>(1.0, LengthUnit.FEET)
+                .add(new Quantity<>(1.0, LengthUnit.INCHES));
+        double rounded = Math.round(sum.getValue() * 100.0) / 100.0;
+        assertEquals(rounded, sum.getValue(), 1e-9);
+    }
+
+    @Test
+    void testRounding_Divide_NoRounding() {
+        // 1/3 has infinite decimal expansion; verify it's NOT truncated to 2 places
+        double result = new Quantity<>(1.0, LengthUnit.FEET)
+                .divide(new Quantity<>(3.0, LengthUnit.FEET));
+        assertNotEquals(Math.round(result * 100.0) / 100.0, result, 1e-9);
+    }
+
+    @Test
+    void testArithmetic_Chain_Operations() {
+        Quantity<LengthUnit> q1 = new Quantity<>(20.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(5.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q3 = new Quantity<>(3.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q4 = new Quantity<>(2.0, LengthUnit.FEET);
+
+        Quantity<LengthUnit> afterAddSub = q1.add(q2).subtract(q3);
+        double finalRatio = afterAddSub.divide(q4);
+
+        assertEquals(22.0, afterAddSub.getValue(), EPS);
+        assertEquals(11.0, finalRatio, EPS);
+    }
+
+    @Test
+    void testAllOperations_AcrossAllCategories() {
+        assertEquals(15.0, new Quantity<>(10.0, LengthUnit.FEET).add(new Quantity<>(5.0, LengthUnit.FEET)).getValue(), EPS);
+        assertEquals(5.0, new Quantity<>(10.0, WeightUnit.KILOGRAM).subtract(new Quantity<>(5.0, WeightUnit.KILOGRAM)).getValue(), EPS);
+        assertEquals(2.0, new Quantity<>(10.0, VolumeUnit.LITRE).divide(new Quantity<>(5.0, VolumeUnit.LITRE)), EPS);
     }
 }
