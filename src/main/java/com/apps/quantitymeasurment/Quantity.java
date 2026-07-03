@@ -158,11 +158,11 @@ public class Quantity<U extends IMeasurable> {
         return new Quantity<>(rounded, targetUnit);
     }
 
-
     @Override
     public String toString() {
         return "Quantity(" + value + ", " + unit.getUnitName() + ")";
     }
+
 
     @Override
     public boolean equals(Object object)
@@ -186,5 +186,4 @@ public class Quantity<U extends IMeasurable> {
         return Math.abs(thisInBase - otherInBase) < EPSILON;
 
     }
-
 }

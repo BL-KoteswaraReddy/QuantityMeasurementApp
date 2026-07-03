@@ -1,8 +1,7 @@
 package com.apps.quantitymeasurment.enums;
-import static com.apps.quantitymeasurment.QuantityMeasurmentApplication.*;
 
 import com.apps.quantitymeasurment.IMeasurable;
-import com.apps.quantitymeasurment.QuantityMeasurmentApplication;
+
 
 public enum LengthUnit implements IMeasurable {
 
@@ -20,6 +19,7 @@ public enum LengthUnit implements IMeasurable {
     public double getConversionFactor() {
         return conversionFactor;
     }
+
     //convert current value to the base unit(inches)
     public double convertToBaseUnit(double value)
     {
@@ -38,13 +38,27 @@ public enum LengthUnit implements IMeasurable {
     }
 
     @Override
+    public String getMeasurementType() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public IMeasurable getUnitInstance(String unitName) {
+        for(LengthUnit unit: LengthUnit.values())
+        {
+            if(unit.getUnitName().equalsIgnoreCase(unitName))
+                return unit;
+        }
+        throw new IllegalArgumentException("Invalid Length unit: "+unitName);
+    }
+
+    @Override
     public boolean supportArithmetic() {
-        return IMeasurable.super.supportArithmetic();
+        return IMeasurable.super.supportsArithmetic();
     }
 
     @Override
     public void validateOperationSupport() {
-        IMeasurable.super.validateOperationSupport();
     }
 
     @Override
@@ -56,6 +70,5 @@ public enum LengthUnit implements IMeasurable {
     public void validateOperationSupport(String operation) {
 
     }
-
 
 }

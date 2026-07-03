@@ -67,4 +67,33 @@ public enum TemperatureUnit implements IMeasurable {
                         + "arithmetically. Only equality comparison and "
                         + "unit conversion are supported for TemperatureUnit.");
     }
+
+
+    @Override
+    public String getMeasurementType() {
+        return this.getClass().getSimpleName();
+    }
+
+
+    @Override
+    public IMeasurable getUnitInstance(String unitName) {
+        for(LengthUnit unit: LengthUnit.values())
+        {
+            if(unit.getUnitName().equalsIgnoreCase(unitName))
+                return unit;
+        }
+        throw new IllegalArgumentException("Invalid Length unit: "+unitName);
+    }
+
+    @Override
+    public boolean supportArithmetic() {
+        return false;
+    }
+
+    @Override
+    public void validateOperationSupport() {
+
+    }
+
+
 }
