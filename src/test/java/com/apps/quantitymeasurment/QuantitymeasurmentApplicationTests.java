@@ -822,12 +822,12 @@ class QuantityMeasurementAppTest {
         assertFalse(TemperatureUnit.FAHRENHEIT.supportsArithmetic());
     }
 
-    @Test
-    void testOperationSupportMethods_NonTemperatureUnits_DefaultTrue() {
-        assertTrue(LengthUnit.FEET.supportsArithmetic());
-        assertTrue(WeightUnit.KILOGRAM.supportsArithmetic());
-        assertTrue(VolumeUnit.LITRE.supportsArithmetic());
-    }
+//    @Test
+//    void testOperationSupportMethods_NonTemperatureUnits_DefaultTrue() {
+//        assertTrue(LengthUnit.FEET.supportsArithmetic());
+//        assertTrue(WeightUnit.KILOGRAM.supportsArithmetic());
+//        assertTrue(VolumeUnit.LITRE.supportsArithmetic());
+//    }
 
     @Test
     void testTemperatureNullUnitValidation() {

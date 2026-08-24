@@ -1,5 +1,4 @@
 package com.apps.quantitymeasurment.enums;
-
 import com.apps.quantitymeasurment.IMeasurable;
 
 public enum VolumeUnit implements IMeasurable {
@@ -41,35 +40,21 @@ public enum VolumeUnit implements IMeasurable {
     }
 
     @Override
-    public void validateOperationSupport(String operation) {
-
-    }
-
-
-    @Override
     public String getMeasurementType() {
         return this.getClass().getSimpleName();
     }
 
 
-    @Override
-    public IMeasurable getUnitInstance(String unitName) {
-        for(LengthUnit unit: LengthUnit.values())
+
+    public static IMeasurable getUnitInstance(String unitName) {
+        for(VolumeUnit unit : VolumeUnit.values())
         {
-            if(unit.getUnitName().equalsIgnoreCase(unitName))
+            if(unit.name().equalsIgnoreCase(unitName))
+            {
                 return unit;
+            }
         }
         throw new IllegalArgumentException("Invalid Length unit: "+unitName);
-    }
-
-    @Override
-    public boolean supportArithmetic() {
-        return false;
-    }
-
-    @Override
-    public void validateOperationSupport() {
-
     }
 
 

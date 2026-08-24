@@ -2,94 +2,88 @@ package com.apps.quantitymeasurment.entity;
 
 import com.apps.quantitymeasurment.IMeasurable;
 import com.apps.quantitymeasurment.Quantity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
-public class QuantityMeasurementEntity implements Serializable
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class QuantityMeasurementEntity
 {
-        private static final long serialVersionUID = 1L;
 
-        private String operationType;    // "COMPARE", "CONVERT", "ADD", "SUBTRACT", "DIVIDE"
-        private double operand1Value;
-        private String operand1Unit;
-        private double operand2Value;    // unused for single-operand ops (e.g. conversion)
-        private String operand2Unit;
-        private String resultUnit;
-        private double resultValue;
-        private boolean booleanResult;   // used for comparison operations
-        private boolean hasError;
-        private String errorMessage;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  Long id;
 
-        // Constructor: binary arithmetic (add/subtract/divide) success
-        public QuantityMeasurementEntity(String operationType,
-                                         double operand1Value, String operand1Unit,
-                                         double operand2Value, String operand2Unit,
-                                         double resultValue, String resultUnit) {
-            this.operationType = operationType;
-            this.operand1Value = operand1Value;
-            this.operand1Unit = operand1Unit;
-            this.operand2Value = operand2Value;
-            this.operand2Unit = operand2Unit;
-            this.resultValue = resultValue;
-            this.resultUnit = resultUnit;
-            this.hasError = false;
-        }
+    @Column(name = "this_value", nullable = false)
+    public double thisValue;
+    @Column(name = "this_unit", nullable = false)
+    public String thisUnit;
+    @Column(name = "this_measurement_type", nullable = false)
+    public String thisMeasurementType;
+    @Column(name = "that_value", nullable = false)
+    public double thatValue;
+    @Column(name = "that_unit", nullable = false)
+    public String thatUnit;
+    @Column(name="that_measurement_type", nullable = false)
+    public String thatMeasurementType;
 
-        // Constructor: comparison success
-        public QuantityMeasurementEntity(double operand1Value, String operand1Unit,
-                                         double operand2Value, String operand2Unit,
-                                         boolean booleanResult) {
-            this.operationType = "COMPARE";
-            this.operand1Value = operand1Value;
-            this.operand1Unit = operand1Unit;
-            this.operand2Value = operand2Value;
-            this.operand2Unit = operand2Unit;
-            this.booleanResult = booleanResult;
-            this.hasError = false;
-        }
+    //e.g "COMPARE", "CONVERT", "ADD", "SUBTRACT", "DIVIDE"
+    @Column(name = "operation", nullable = false)
+    public String operation;
 
-        // Constructor: single-operand conversion success
-        public QuantityMeasurementEntity(double operand1Value, String operand1Unit,
-                                         double resultValue, String resultUnit) {
-            this.operationType = "CONVERT";
-            this.operand1Value = operand1Value;
-            this.operand1Unit = operand1Unit;
-            this.resultValue = resultValue;
-            this.resultUnit = resultUnit;
-            this.hasError = false;
-        }
+    @Column(name = "result_value")
+    public  double resultValue;
 
-        // Constructor: error case
-        public QuantityMeasurementEntity(String operationType, String errorMessage) {
-            this.operationType = operationType;
-            this.hasError = true;
-            this.errorMessage = errorMessage;
-        }
+    @Column(name = "result_unit")
+    public String resultUnit;
 
-        public String getOperationType() { return operationType; }
-        public double getOperand1Value() { return operand1Value; }
-        public String getOperand1Unit() { return operand1Unit; }
-        public double getOperand2Value() { return operand2Value; }
-        public String getOperand2Unit() { return operand2Unit; }
-        public String getResultUnit() { return resultUnit; }
-        public double getResultValue() { return resultValue; }
-        public boolean getBooleanResult() { return booleanResult; }
-        public boolean hasError() { return hasError; }
-        public String getErrorMessage() { return errorMessage; }
+    @Column(name = "result_measurement_type")
+    public String resultMeasurementType;
 
-        @Override
-        public String toString() {
-            if (hasError) {
-                return "[" + operationType + "] ERROR: " + errorMessage;
-            }
-            if ("COMPARE".equals(operationType)) {
-                return operand1Value + " " + operand1Unit + " == "
-                        + operand2Value + " " + operand2Unit + " ? " + booleanResult;
-            }
-            if ("CONVERT".equals(operationType)) {
-                return operand1Value + " " + operand1Unit + " -> " + resultValue + " " + resultUnit;
-            }
-            return operand1Value + " " + operand1Unit + " " + operationType + " "
-                    + operand2Value + " " + operand2Unit + " = " + resultValue + " " + resultUnit;
-        }
+    //for comparision result like equal or not equal
+    @Column(name = "result_string")
+    public String resultString;
+
+    @Column(name = "is_error")
+    public boolean isError;
+
+    @Column(name = "error_message")
+    public String errorMessage;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    @Column
+    private LocalDateTime updatedAt;
+
+    public QuantityMeasurementEntity(String operatinType, Exception e) {
+        this.operation = operatinType;
+        this.isError = true;
+        this.errorMessage = e.getMessage();
     }
+
+    public QuantityMeasurementEntity(@NotNull(message = "Value cannot be null") double value, @NotNull(message = "Unit cannot be null") String unitName, @NotNull(message = "Measurement type cannot be null") @Pattern(regexp = "LengthUnit|VolumeUnit|WeightUnit|TemperatureUnit",
+            message = "Measurement type must be one of: LengthUnit, VolumeUnit, " + "WeightUnit, TemperatureUnit") String measurementType, @NotNull(message = "Value cannot be null") double value1, @NotNull(message = "Unit cannot be null") String unitName1, @NotNull(message = "Measurement type cannot be null") @Pattern(regexp = "LengthUnit|VolumeUnit|WeightUnit|TemperatureUnit",
+            message = "Measurement type must be one of: LengthUnit, VolumeUnit, " + "WeightUnit, TemperatureUnit") String measurementType1, String name, double resultValue, String resultUnit, String resultType) {
+
+    }
+
+    @PrePersist
+    protected void onCreate(){
+
+    }
+
+    @PreUpdate
+    private void onUpdate()
+    {
+        updatedAt = LocalDateTime.now();
+    }
+
+}

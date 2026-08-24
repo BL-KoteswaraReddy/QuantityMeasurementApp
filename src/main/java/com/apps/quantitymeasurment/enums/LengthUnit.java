@@ -23,7 +23,12 @@ public enum LengthUnit implements IMeasurable {
     //convert current value to the base unit(inches)
     public double convertToBaseUnit(double value)
     {
-        return value*conversionFactor;
+        double result = value*conversionFactor;
+        return roundOffTillTwoDecimal(result);
+    }
+
+    private double roundOffTillTwoDecimal(double value) {
+        return Math.round(value*100.0/100.0);
     }
 
     //convert from baseunit
@@ -34,7 +39,7 @@ public enum LengthUnit implements IMeasurable {
 
     @Override
     public String getUnitName() {
-        return name();
+        return this.name();
     }
 
     @Override
@@ -42,7 +47,6 @@ public enum LengthUnit implements IMeasurable {
         return this.getClass().getSimpleName();
     }
 
-    @Override
     public IMeasurable getUnitInstance(String unitName) {
         for(LengthUnit unit: LengthUnit.values())
         {
@@ -52,23 +56,5 @@ public enum LengthUnit implements IMeasurable {
         throw new IllegalArgumentException("Invalid Length unit: "+unitName);
     }
 
-    @Override
-    public boolean supportArithmetic() {
-        return IMeasurable.super.supportsArithmetic();
-    }
-
-    @Override
-    public void validateOperationSupport() {
-    }
-
-    @Override
-    public boolean supportsArithmetic() {
-        return false;
-    }
-
-    @Override
-    public void validateOperationSupport(String operation) {
-
-    }
 
 }

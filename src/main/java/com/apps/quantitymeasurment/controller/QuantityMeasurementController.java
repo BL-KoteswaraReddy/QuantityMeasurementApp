@@ -1,55 +1,50 @@
 package com.apps.quantitymeasurment.controller;
 
 import com.apps.quantitymeasurment.dto.QuantityDTO;
-import com.apps.quantitymeasurment.entity.QuantityMeasurementEntity;
+import com.apps.quantitymeasurment.dto.QuantityInputDTO;
+import com.apps.quantitymeasurment.dto.QuantityMeasurementDTO;
 import com.apps.quantitymeasurment.service.IQuantityMeasurementService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.lang.model.element.QualifiedNameable;
+import java.util.logging.Logger;
+
+
+@RestController
+@RequestMapping("/api/v1/measurements")
+@RequiredArgsConstructor
 public class QuantityMeasurementController {
 
-    private final IQuantityMeasurementService service;
+    //Logger for logging information and errors in the controller
+    private static final Logger logger = Logger.getLogger(QuantityMeasurementController.class.getName());
 
-    public QuantityMeasurementController(IQuantityMeasurementService service) {
-        if (service == null) {
-            throw new IllegalArgumentException("Service cannot be null");
-        }
-        this.service = service;
+    public final IQuantityMeasurementService service;
+
+    @PostMapping("/compare")
+    public ResponseEntity<QuantityMeasurementDTO> performComparision(@Valid @RequestBody QuantityInputDTO input) {
+                return ResponseEntity.ok(service.convert(input.getThisQuantityDTO(), input.getThatQuantityDTO()));
     }
 
-    // Maps conceptually to: POST /api/quantity/compare
-    public void performEquality(QuantityDTO dto1, QuantityDTO dto2) {
-        QuantityMeasurementEntity result = service.compare(dto1, dto2);
-        displayResult(result);
+    @PostMapping("/add")
+    public ResponseEntity<QuantityMeasurementDTO> performAdd(@Valid @RequestBody QuantityInputDTO input) {
+         return ResponseEntity.ok(service.add(input.getThisQuantityDTO(), input.getThatQuantityDTO()));
     }
+//
+//    @PostMapping("/subtract")
+//    public ResponseEntity<QuantityMeasurementDTO> performSubtraction() {
+//
+//    }
+//
+//    @PostMapping("/subtract-with-target-unit")
+//    public ResponseEntity<QuantityMeasurementDTO> performSubtractionWithTargetUnit() {
+//
+//    }
 
-    // Maps conceptually to: POST /api/quantity/convert
-    public void performConversion(QuantityDTO dto, String targetUnitName) {
-        QuantityMeasurementEntity result = service.convert(dto, targetUnitName);
-        displayResult(result);
-    }
-
-    // Maps conceptually to: POST /api/quantity/add
-    public void performAddition(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName) {
-        QuantityMeasurementEntity result = service.add(dto1, dto2, targetUnitName);
-        displayResult(result);
-    }
-
-    // Maps conceptually to: POST /api/quantity/subtract
-    public void performSubtraction(QuantityDTO dto1, QuantityDTO dto2, String targetUnitName) {
-        QuantityMeasurementEntity result = service.subtract(dto1, dto2, targetUnitName);
-        displayResult(result);
-    }
-
-    // Maps conceptually to: POST /api/quantity/divide
-    public void performDivision(QuantityDTO dto1, QuantityDTO dto2) {
-        QuantityMeasurementEntity result = service.divide(dto1, dto2);
-        displayResult(result);
-    }
-
-    private void displayResult(QuantityMeasurementEntity entity) {
-        if (entity.hasError()) {
-            System.out.println("ERROR [" + entity.getOperationType() + "]: " + entity.getErrorMessage());
-        } else {
-            System.out.println(entity);
-        }
-    }
 }

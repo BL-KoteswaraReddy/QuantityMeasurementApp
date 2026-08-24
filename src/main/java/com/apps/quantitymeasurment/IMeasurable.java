@@ -7,23 +7,26 @@ public interface IMeasurable {
     double convertFromBaseUnit(double baseValue);
     String getUnitName();
 
-    IMeasurable getUnitInstance(String unitName);
-
-    @FunctionalInterface
-    interface SupportsArithmetic {
-        boolean isSupported();
+    static IMeasurable getUnitInstance(String unitName, Class<?> enumClass){
+        for(Object constant: enumClass.getEnumConstants())
+        {
+            IMeasurable unit = (IMeasurable)constant;
+            if(unit.getUnitName().equalsIgnoreCase(unitName))
+            {
+                return unit;
+            }
+        }
+        throw new IllegalArgumentException("Invalid unit: "+unitName);
     }
 
-    boolean supportArithmetic();
-
-    void validateOperationSupport();
+    SupportsArithmetic supportsArithmetic = () -> true;
 
     default boolean supportsArithmetic() {
-        return true;
+        return supportsArithmetic.isSupported();
     }
 
     default void validateOperationSupport(String operation) {
-        // no-op by default
+
     }
 
     /**
@@ -31,7 +34,9 @@ public interface IMeasurable {
      * (e.g. "LENGTH", "WEIGHT"). Used by the service layer to validate
      * that a QuantityDTO's declared category matches its unit.
      */
-    String getMeasurementType();
+   default String getMeasurementType(){
+       return this.getMeasurementType().getClass().getSimpleName();
+   }
 
     /**
      * Resolves an IMeasurable instance from its category and unit name.

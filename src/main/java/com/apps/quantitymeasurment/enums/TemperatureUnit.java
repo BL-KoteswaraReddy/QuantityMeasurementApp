@@ -61,12 +61,17 @@ public enum TemperatureUnit implements IMeasurable {
 
     @Override
     public void validateOperationSupport(String operation) {
-        throw new UnsupportedOperationException(
-                "Temperature does not support " + operation.toLowerCase()
-                        + " — absolute temperatures cannot be combined "
-                        + "arithmetically. Only equality comparison and "
-                        + "unit conversion are supported for TemperatureUnit.");
-    }
+
+        if(!supportsArithmetic.isSupported())
+        {
+            throw new UnsupportedOperationException(
+                    "Temperature does not support " + operation.toLowerCase()
+                            + " — absolute temperatures cannot be combined "
+                            + "arithmetically. Only equality comparison and "
+                            + "unit conversion are supported for TemperatureUnit.");
+        }
+        }
+
 
 
     @Override
@@ -75,25 +80,14 @@ public enum TemperatureUnit implements IMeasurable {
     }
 
 
-    @Override
     public IMeasurable getUnitInstance(String unitName) {
-        for(LengthUnit unit: LengthUnit.values())
-        {
-            if(unit.getUnitName().equalsIgnoreCase(unitName))
-                return unit;
-        }
+       for(TemperatureUnit unit: TemperatureUnit.values())
+       {
+           if(unit.toString().equalsIgnoreCase(unitName)){
+               return unit;
+           }
+       }
         throw new IllegalArgumentException("Invalid Length unit: "+unitName);
     }
-
-    @Override
-    public boolean supportArithmetic() {
-        return false;
-    }
-
-    @Override
-    public void validateOperationSupport() {
-
-    }
-
 
 }

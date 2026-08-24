@@ -34,7 +34,12 @@ public enum WeightUnit implements IMeasurable {
     //convert from base unit
     public double convertFromBaseUnit(double baseValue)
     {
-        return baseValue/conversionFactor;
+        double result =  baseValue/conversionFactor;
+        return roundOffTwoDecimal(result);
+    }
+
+    private double roundOffTwoDecimal(double value) {
+        return Math.round(value*100.0/100.0);
     }
 
     @Override
@@ -58,9 +63,7 @@ public enum WeightUnit implements IMeasurable {
         return this.getClass().getSimpleName();
     }
 
-
-    @Override
-    public IMeasurable getUnitInstance(String unitName) {
+    public static IMeasurable getUnitInstance(String unitName) {
         for(LengthUnit unit: LengthUnit.values())
         {
             if(unit.getUnitName().equalsIgnoreCase(unitName))
@@ -69,15 +72,8 @@ public enum WeightUnit implements IMeasurable {
         throw new IllegalArgumentException("Invalid Length unit: "+unitName);
     }
 
-    @Override
     public boolean supportArithmetic() {
         return false;
     }
-
-    @Override
-    public void validateOperationSupport() {
-
-    }
-
 
 }

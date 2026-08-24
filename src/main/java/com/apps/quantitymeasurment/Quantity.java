@@ -1,6 +1,7 @@
 package com.apps.quantitymeasurment;
 
-import javax.print.Doc;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
 
@@ -70,8 +71,8 @@ public class Quantity<U extends IMeasurable> {
     private double performBaseArithmetic(Quantity<U> other, ArithmeticOperation operation)
     {
         this.unit.validateOperationSupport(operation.name());   // ← NEW LINE
-        double thisInBase = this.convertToBaseUnit();
-        double otherInBase = other.convertToBaseUnit();
+        double thisInBase = this.convertToBaseUnit(getValue());
+        double otherInBase = other.convertToBaseUnit(getValue());
         return operation.compute(thisInBase, otherInBase);
     }
 
@@ -127,8 +128,8 @@ public class Quantity<U extends IMeasurable> {
     }
 
     // Convert this quantity's value into the category's base unit
-    public double convertToBaseUnit() {
-        return unit.convertToBaseUnit(value);
+    public double convertToBaseUnit(@NotNull double value) {
+        return unit.convertToBaseUnit(this.value);
     }
 
 
